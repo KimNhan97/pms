@@ -10,7 +10,6 @@ namespace PMS
     {
         private readonly User _currentUser;
         private readonly IAuthService _authService;
-        private readonly IProjectService _service;
 
 
         // Nhận user từ FormLogin

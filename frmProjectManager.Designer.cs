@@ -144,6 +144,7 @@
             this.dgvProjects.ThemeStyle.RowsStyle.Height = 22;
             this.dgvProjects.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvProjects.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.dgvProjects.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProjects_CellDoubleClick);
             this.dgvProjects.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvProjects_CellFormatting);
             this.dgvProjects.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dgvProjects_CellPainting);
             // 

@@ -18,6 +18,8 @@ namespace PMS
     public partial class frmProjectManager : Form
     {
         private readonly IProjectService _service;
+        //private IProjectService _projectService;
+
 
         public frmProjectManager()
         {
@@ -28,6 +30,10 @@ namespace PMS
         {
             _service = service;
         }
+        //public frmProjectManager(IProjectService projectService) : this()
+        //{
+        //    _projectService = projectService;
+        //}
         private void LoadData()
         {
             dgvProjects.DataSource = null;
@@ -171,6 +177,12 @@ namespace PMS
         {
             dgvProjects.AutoGenerateColumns = false;
             dgvProjects.Columns.Clear();
+            dgvProjects.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "ProjectID",
+                Name = "ProjectID",
+                Visible = false
+            });
 
             dgvProjects.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -379,7 +391,7 @@ namespace PMS
                 return;
             }
 
-            var project = _projectService.GetById(id);
+            Project project = _service.GetById(id);
             if (project == null)
             {
                 MessageBox.Show("Dự án không tồn tại.");
@@ -390,8 +402,14 @@ namespace PMS
             frm.StartPosition = FormStartPosition.CenterScreen;
             frm.ShowDialog();
 
-            LoadData(); // reload lại danh sách sau khi đóng
+            LoadData();
         }
 
+
+        private void dgvProjects_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            btnView_Click(sender, e);
+
+        }
     }
 }
