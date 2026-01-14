@@ -31,8 +31,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
-            this.guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblProgressPercent = new System.Windows.Forms.Label();
             this.labelFullName = new System.Windows.Forms.Label();
             this.txtDescription = new Guna.UI2.WinForms.Guna2HtmlLabel();
             this.labelRole = new System.Windows.Forms.Label();
@@ -41,6 +40,8 @@
             this.dtpStartDate = new Guna.UI2.WinForms.Guna2DateTimePicker();
             this.labelStatus = new System.Windows.Forms.Label();
             this.dtpEndDate = new Guna.UI2.WinForms.Guna2DateTimePicker();
+            this.prgProgress = new Guna.UI2.WinForms.Guna2ProgressBar();
+            this.label2 = new System.Windows.Forms.Label();
             this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +50,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.label3.ForeColor = System.Drawing.Color.RoyalBlue;
-            this.label3.Location = new System.Drawing.Point(258, 58);
+            this.label3.Location = new System.Drawing.Point(78, 61);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(343, 17);
             this.label3.TabIndex = 38;
@@ -61,7 +62,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.label1.ForeColor = System.Drawing.Color.Navy;
-            this.label1.Location = new System.Drawing.Point(285, 26);
+            this.label1.Location = new System.Drawing.Point(105, 29);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(297, 32);
             this.label1.TabIndex = 37;
@@ -71,8 +72,9 @@
             // guna2Panel1
             // 
             this.guna2Panel1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.guna2Panel1.Controls.Add(this.guna2HtmlLabel1);
             this.guna2Panel1.Controls.Add(this.label2);
+            this.guna2Panel1.Controls.Add(this.prgProgress);
+            this.guna2Panel1.Controls.Add(this.lblProgressPercent);
             this.guna2Panel1.Controls.Add(this.labelFullName);
             this.guna2Panel1.Controls.Add(this.txtDescription);
             this.guna2Panel1.Controls.Add(this.labelRole);
@@ -81,33 +83,21 @@
             this.guna2Panel1.Controls.Add(this.dtpStartDate);
             this.guna2Panel1.Controls.Add(this.labelStatus);
             this.guna2Panel1.Controls.Add(this.dtpEndDate);
-            this.guna2Panel1.Location = new System.Drawing.Point(205, 104);
+            this.guna2Panel1.Location = new System.Drawing.Point(23, 104);
             this.guna2Panel1.Name = "guna2Panel1";
-            this.guna2Panel1.Size = new System.Drawing.Size(432, 334);
+            this.guna2Panel1.Size = new System.Drawing.Size(432, 350);
             this.guna2Panel1.TabIndex = 41;
             // 
-            // guna2HtmlLabel1
+            // lblProgressPercent
             // 
-            this.guna2HtmlLabel1.BackColor = System.Drawing.Color.Transparent;
-            this.guna2HtmlLabel1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.guna2HtmlLabel1.Location = new System.Drawing.Point(158, 142);
-            this.guna2HtmlLabel1.MaximumSize = new System.Drawing.Size(240, 45);
-            this.guna2HtmlLabel1.MinimumSize = new System.Drawing.Size(240, 23);
-            this.guna2HtmlLabel1.Name = "guna2HtmlLabel1";
-            this.guna2HtmlLabel1.Size = new System.Drawing.Size(240, 23);
-            this.guna2HtmlLabel1.TabIndex = 42;
-            this.guna2HtmlLabel1.Text = "guna2HtmlLabel1";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.Navy;
-            this.label2.Location = new System.Drawing.Point(59, 142);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 21);
-            this.label2.TabIndex = 41;
-            this.label2.Text = "Tiến độ :";
+            this.lblProgressPercent.AutoSize = true;
+            this.lblProgressPercent.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
+            this.lblProgressPercent.ForeColor = System.Drawing.Color.Navy;
+            this.lblProgressPercent.Location = new System.Drawing.Point(290, 144);
+            this.lblProgressPercent.Name = "lblProgressPercent";
+            this.lblProgressPercent.Size = new System.Drawing.Size(77, 21);
+            this.lblProgressPercent.TabIndex = 42;
+            this.lblProgressPercent.Text = "Tiến độ : ";
             // 
             // labelFullName
             // 
@@ -137,7 +127,7 @@
             this.labelRole.AutoSize = true;
             this.labelRole.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
             this.labelRole.ForeColor = System.Drawing.Color.Navy;
-            this.labelRole.Location = new System.Drawing.Point(17, 197);
+            this.labelRole.Location = new System.Drawing.Point(17, 206);
             this.labelRole.Name = "labelRole";
             this.labelRole.Size = new System.Drawing.Size(115, 21);
             this.labelRole.TabIndex = 31;
@@ -169,11 +159,11 @@
             this.dtpStartDate.Checked = true;
             this.dtpStartDate.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.dtpStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Long;
-            this.dtpStartDate.Location = new System.Drawing.Point(158, 197);
+            this.dtpStartDate.Location = new System.Drawing.Point(156, 198);
             this.dtpStartDate.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.dtpStartDate.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(240, 35);
+            this.dtpStartDate.Size = new System.Drawing.Size(240, 43);
             this.dtpStartDate.TabIndex = 35;
             this.dtpStartDate.Value = new System.DateTime(2025, 12, 31, 0, 48, 39, 38);
             // 
@@ -182,7 +172,7 @@
             this.labelStatus.AutoSize = true;
             this.labelStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
             this.labelStatus.ForeColor = System.Drawing.Color.Navy;
-            this.labelStatus.Location = new System.Drawing.Point(17, 265);
+            this.labelStatus.Location = new System.Drawing.Point(17, 285);
             this.labelStatus.Name = "labelStatus";
             this.labelStatus.Size = new System.Drawing.Size(119, 21);
             this.labelStatus.TabIndex = 32;
@@ -193,7 +183,7 @@
             this.dtpEndDate.Checked = true;
             this.dtpEndDate.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.dtpEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Long;
-            this.dtpEndDate.Location = new System.Drawing.Point(158, 265);
+            this.dtpEndDate.Location = new System.Drawing.Point(156, 276);
             this.dtpEndDate.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.dtpEndDate.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.dtpEndDate.Name = "dtpEndDate";
@@ -201,11 +191,31 @@
             this.dtpEndDate.TabIndex = 36;
             this.dtpEndDate.Value = new System.DateTime(2025, 12, 31, 0, 48, 49, 585);
             // 
+            // prgProgress
+            // 
+            this.prgProgress.Location = new System.Drawing.Point(156, 144);
+            this.prgProgress.Name = "prgProgress";
+            this.prgProgress.Size = new System.Drawing.Size(121, 20);
+            this.prgProgress.TabIndex = 43;
+            this.prgProgress.Text = "guna2ProgressBar1";
+            this.prgProgress.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.Navy;
+            this.label2.Location = new System.Drawing.Point(59, 144);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 21);
+            this.label2.TabIndex = 44;
+            this.label2.Text = "Tiến độ : ";
+            // 
             // FrmProjectDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 468);
+            this.ClientSize = new System.Drawing.Size(480, 477);
             this.Controls.Add(this.guna2Panel1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label1);
@@ -231,7 +241,8 @@
         private Guna.UI2.WinForms.Guna2DateTimePicker dtpStartDate;
         private System.Windows.Forms.Label labelStatus;
         private Guna.UI2.WinForms.Guna2DateTimePicker dtpEndDate;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
+        private System.Windows.Forms.Label lblProgressPercent;
         private System.Windows.Forms.Label label2;
+        private Guna.UI2.WinForms.Guna2ProgressBar prgProgress;
     }
 }

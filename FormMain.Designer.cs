@@ -33,9 +33,10 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
             this.menuManageUsers = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.btnMyProjects = new System.Windows.Forms.Button();
+            this.btnTaskManager = new System.Windows.Forms.Button();
+            this.btnProjectManagement = new System.Windows.Forms.Button();
+            this.btnReports = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblname = new System.Windows.Forms.Label();
@@ -71,9 +72,10 @@
             this.flowLayoutPanel1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.flowLayoutPanel1.Controls.Add(this.label3);
             this.flowLayoutPanel1.Controls.Add(this.menuManageUsers);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
-            this.flowLayoutPanel1.Controls.Add(this.button2);
-            this.flowLayoutPanel1.Controls.Add(this.button3);
+            this.flowLayoutPanel1.Controls.Add(this.btnMyProjects);
+            this.flowLayoutPanel1.Controls.Add(this.btnTaskManager);
+            this.flowLayoutPanel1.Controls.Add(this.btnProjectManagement);
+            this.flowLayoutPanel1.Controls.Add(this.btnReports);
             this.flowLayoutPanel1.Controls.Add(this.button4);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 72);
@@ -110,48 +112,63 @@
             this.menuManageUsers.UseVisualStyleBackColor = false;
             this.menuManageUsers.Click += new System.EventHandler(this.menuManageUsers_Click_1);
             // 
-            // button1
+            // btnMyProjects
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(10, 128);
-            this.button1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 30);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(176, 47);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "📁  Quản lý dự án  ";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnMyProjects.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnMyProjects.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMyProjects.Location = new System.Drawing.Point(10, 128);
+            this.btnMyProjects.Margin = new System.Windows.Forms.Padding(0, 0, 0, 30);
+            this.btnMyProjects.Name = "btnMyProjects";
+            this.btnMyProjects.Size = new System.Drawing.Size(176, 47);
+            this.btnMyProjects.TabIndex = 2;
+            this.btnMyProjects.Text = "📁  Quản lý dự án  ";
+            this.btnMyProjects.UseVisualStyleBackColor = false;
+            this.btnMyProjects.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // btnTaskManager
             // 
-            this.button2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(10, 205);
-            this.button2.Margin = new System.Windows.Forms.Padding(0, 0, 0, 30);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(176, 47);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "📋  Quản lý công việc";
-            this.button2.UseVisualStyleBackColor = false;
+            this.btnTaskManager.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnTaskManager.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTaskManager.Location = new System.Drawing.Point(10, 205);
+            this.btnTaskManager.Margin = new System.Windows.Forms.Padding(0, 0, 0, 30);
+            this.btnTaskManager.Name = "btnTaskManager";
+            this.btnTaskManager.Size = new System.Drawing.Size(176, 47);
+            this.btnTaskManager.TabIndex = 3;
+            this.btnTaskManager.Text = "📋  Quản lý công việc";
+            this.btnTaskManager.UseVisualStyleBackColor = false;
+            this.btnTaskManager.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button3
+            // btnProjectManagement
             // 
-            this.button3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(10, 282);
-            this.button3.Margin = new System.Windows.Forms.Padding(0, 0, 0, 290);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(176, 47);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "👥  Quản lý nhân viên";
-            this.button3.UseVisualStyleBackColor = false;
+            this.btnProjectManagement.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnProjectManagement.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnProjectManagement.Location = new System.Drawing.Point(10, 282);
+            this.btnProjectManagement.Margin = new System.Windows.Forms.Padding(0, 0, 0, 30);
+            this.btnProjectManagement.Name = "btnProjectManagement";
+            this.btnProjectManagement.Size = new System.Drawing.Size(176, 47);
+            this.btnProjectManagement.TabIndex = 4;
+            this.btnProjectManagement.Text = "👥  Quản lý nhân viên";
+            this.btnProjectManagement.UseVisualStyleBackColor = false;
+            this.btnProjectManagement.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // btnReports
+            // 
+            this.btnReports.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnReports.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReports.Location = new System.Drawing.Point(10, 359);
+            this.btnReports.Margin = new System.Windows.Forms.Padding(0, 0, 0, 190);
+            this.btnReports.Name = "btnReports";
+            this.btnReports.Size = new System.Drawing.Size(176, 47);
+            this.btnReports.TabIndex = 6;
+            this.btnReports.Text = "📄  Báo cáo dự án ";
+            this.btnReports.UseVisualStyleBackColor = false;
+            this.btnReports.Click += new System.EventHandler(this.btnReports_Click);
             // 
             // button4
             // 
             this.button4.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.button4.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(10, 619);
+            this.button4.Location = new System.Drawing.Point(10, 596);
             this.button4.Margin = new System.Windows.Forms.Padding(0);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(176, 47);
@@ -231,10 +248,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button btnMyProjects;
+        private System.Windows.Forms.Button btnTaskManager;
+        private System.Windows.Forms.Button btnProjectManagement;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label lblname;
+        private System.Windows.Forms.Button btnReports;
     }
 }

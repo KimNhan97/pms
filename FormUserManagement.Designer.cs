@@ -31,7 +31,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panelEdit = new System.Windows.Forms.Panel();
             this.cboSearchStatus = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.btnSave = new Guna.UI2.WinForms.Guna2Button();
             this.label6 = new System.Windows.Forms.Label();
             this.cboRole = new System.Windows.Forms.ComboBox();
@@ -61,7 +60,6 @@
             // 
             this.panelEdit.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.panelEdit.Controls.Add(this.cboSearchStatus);
-            this.panelEdit.Controls.Add(this.label2);
             this.panelEdit.Controls.Add(this.btnSave);
             this.panelEdit.Controls.Add(this.label6);
             this.panelEdit.Controls.Add(this.cboRole);
@@ -84,7 +82,7 @@
             this.panelEdit.Location = new System.Drawing.Point(0, 71);
             this.panelEdit.Name = "panelEdit";
             this.panelEdit.Padding = new System.Windows.Forms.Padding(2);
-            this.panelEdit.Size = new System.Drawing.Size(1049, 309);
+            this.panelEdit.Size = new System.Drawing.Size(1049, 247);
             this.panelEdit.TabIndex = 1;
             this.panelEdit.Paint += new System.Windows.Forms.PaintEventHandler(this.panelEdit_Paint);
             // 
@@ -97,25 +95,13 @@
             this.cboSearchStatus.FormattingEnabled = true;
             this.cboSearchStatus.IntegralHeight = false;
             this.cboSearchStatus.Items.AddRange(new object[] {
-            "Tất cả trạng thái ",
             "Available",
             "Busy"});
-            this.cboSearchStatus.Location = new System.Drawing.Point(71, 245);
+            this.cboSearchStatus.Location = new System.Drawing.Point(481, 17);
             this.cboSearchStatus.Name = "cboSearchStatus";
             this.cboSearchStatus.Size = new System.Drawing.Size(167, 33);
             this.cboSearchStatus.TabIndex = 1;
             this.cboSearchStatus.SelectedIndexChanged += new System.EventHandler(this.cboSearchStatus_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.label2.ForeColor = System.Drawing.Color.Navy;
-            this.label2.Location = new System.Drawing.Point(21, 251);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 21);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Lọc :";
             // 
             // btnSave
             // 
@@ -125,7 +111,7 @@
             this.btnSave.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnSave.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(933, 193);
+            this.btnSave.Location = new System.Drawing.Point(935, 195);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(90, 35);
             this.btnSave.TabIndex = 19;
@@ -155,7 +141,6 @@
             this.cboRole.Name = "cboRole";
             this.cboRole.Size = new System.Drawing.Size(190, 33);
             this.cboRole.TabIndex = 16;
-            this.cboRole.SelectedIndexChanged += new System.EventHandler(this.cboRole_SelectedIndexChanged_1);
             // 
             // labelUsername
             // 
@@ -208,7 +193,6 @@
             this.labelRole.Size = new System.Drawing.Size(57, 21);
             this.labelRole.TabIndex = 4;
             this.labelRole.Text = "Vai trò";
-            this.labelRole.Click += new System.EventHandler(this.labelRole_Click);
             // 
             // cboStatus
             // 
@@ -222,7 +206,6 @@
             this.cboStatus.Name = "cboStatus";
             this.cboStatus.Size = new System.Drawing.Size(190, 33);
             this.cboStatus.TabIndex = 7;
-            this.cboStatus.SelectedIndexChanged += new System.EventHandler(this.cboStatus_SelectedIndexChanged);
             // 
             // txtFullName
             // 
@@ -296,9 +279,9 @@
             // btnReload
             // 
             this.btnReload.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.btnReload.Location = new System.Drawing.Point(669, 251);
+            this.btnReload.Location = new System.Drawing.Point(675, 15);
             this.btnReload.Name = "btnReload";
-            this.btnReload.Size = new System.Drawing.Size(110, 35);
+            this.btnReload.Size = new System.Drawing.Size(119, 35);
             this.btnReload.TabIndex = 15;
             this.btnReload.Text = "⟳ Làm mới";
             this.btnReload.UseVisualStyleBackColor = true;
@@ -307,7 +290,7 @@
             // btnDelete
             // 
             this.btnDelete.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.btnDelete.Location = new System.Drawing.Point(812, 251);
+            this.btnDelete.Location = new System.Drawing.Point(935, 142);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(90, 35);
             this.btnDelete.TabIndex = 12;
@@ -318,7 +301,7 @@
             // btnUpdate
             // 
             this.btnUpdate.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.btnUpdate.Location = new System.Drawing.Point(933, 251);
+            this.btnUpdate.Location = new System.Drawing.Point(935, 87);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(90, 35);
             this.btnUpdate.TabIndex = 9;
@@ -336,7 +319,6 @@
             this.label5.Size = new System.Drawing.Size(301, 17);
             this.label5.TabIndex = 17;
             this.label5.Text = "Quản lý thông tin nhân viên và theo dõi trạng thái ";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label4
             // 
@@ -348,7 +330,6 @@
             this.label4.Size = new System.Drawing.Size(487, 32);
             this.label4.TabIndex = 16;
             this.label4.Text = "⚙ DANH SÁCH TÀI KHOẢN NHÂN VIÊN ";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // dgvUsers
             // 
@@ -365,11 +346,11 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvUsers.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvUsers.Location = new System.Drawing.Point(0, 398);
+            this.dgvUsers.Location = new System.Drawing.Point(0, 341);
             this.dgvUsers.MultiSelect = false;
             this.dgvUsers.Name = "dgvUsers";
             this.dgvUsers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvUsers.Size = new System.Drawing.Size(1049, 326);
+            this.dgvUsers.Size = new System.Drawing.Size(1049, 383);
             this.dgvUsers.TabIndex = 2;
             this.dgvUsers.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsers_CellClick);
             this.dgvUsers.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUsers_CellContentClick);
@@ -403,7 +384,6 @@
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnReload;
         private System.Windows.Forms.ComboBox cboSearchStatus;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label labelUsername;

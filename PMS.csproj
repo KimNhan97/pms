@@ -56,6 +56,7 @@
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -99,6 +100,12 @@
     <Compile Include="FormCreateUser.Designer.cs">
       <DependentUpon>FormCreateUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormEditReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEditReport.Designer.cs">
+      <DependentUpon>FormEditReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormLogin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +117,24 @@
     </Compile>
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormProjectMembers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormProjectMembers.Designer.cs">
+      <DependentUpon>FormProjectMembers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormReports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormReports.Designer.cs">
+      <DependentUpon>FormReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSelectUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSelectUser.Designer.cs">
+      <DependentUpon>FormSelectUser.cs</DependentUpon>
     </Compile>
     <Compile Include="FormUserManagement.cs">
       <SubType>Form</SubType>
@@ -129,6 +154,18 @@
     <Compile Include="frmProjectManager.Designer.cs">
       <DependentUpon>frmProjectManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmTaskEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmTaskEdit.Designer.cs">
+      <DependentUpon>FrmTaskEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmTaskManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmTaskManager.Designer.cs">
+      <DependentUpon>FrmTaskManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormCreateProject.resx">
@@ -137,11 +174,23 @@
     <EmbeddedResource Include="FormCreateUser.resx">
       <DependentUpon>FormCreateUser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormEditReport.resx">
+      <DependentUpon>FormEditReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormProjectMembers.resx">
+      <DependentUpon>FormProjectMembers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormReports.resx">
+      <DependentUpon>FormReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSelectUser.resx">
+      <DependentUpon>FormSelectUser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormUserManagement.resx">
       <DependentUpon>FormUserManagement.cs</DependentUpon>
@@ -151,6 +200,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmProjectManager.resx">
       <DependentUpon>frmProjectManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmTaskEdit.resx">
+      <DependentUpon>FrmTaskEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmTaskManager.resx">
+      <DependentUpon>FrmTaskManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -184,6 +239,10 @@
     <ProjectReference Include="..\PMS.DAL\PMS.DAL.csproj">
       <Project>{a6216664-7af2-436d-a23a-d750fa5bf2dd}</Project>
       <Name>PMS.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PMS.DTO\PMS.DTO.csproj">
+      <Project>{b161d4f0-c51d-4ead-bcd5-4c76946382d1}</Project>
+      <Name>PMS.DTO</Name>
     </ProjectReference>
     <ProjectReference Include="..\PMS.Entities\PMS.Entities.csproj">
       <Project>{c976519e-7d4b-4406-9496-04d8012aca1d}</Project>

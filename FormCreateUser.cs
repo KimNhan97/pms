@@ -1,4 +1,5 @@
 ﻿using PMS.BLL;
+using PMS.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,10 +21,75 @@ namespace PMS
             InitializeComponent();
             _authService = authService;
         }
+        private string HashPassword(string password)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
+        }
 
         private void FormCreateUser_Load(object sender, EventArgs e)
         {
+            // Nạp danh sách Role tiếng Việt
+            cboRole.Items.Clear();
+            cboRole.Items.AddRange(new object[] { "Quản trị viên", "Nhân viên" });
+            cboRole.SelectedIndex = 1; // Mặc định là Nhân viên
 
+            // Nạp danh sách Trạng thái tiếng Việt
+            cboStatus.Items.Clear();
+            cboStatus.Items.AddRange(new object[] { "Sẵn sàng", "Đang bận" });
+            cboStatus.SelectedIndex = 0; // Mặc định là Sẵn sàng
+            cboRole.SelectedIndex = 0;     // Admin
+            cboStatus.SelectedIndex = 1;   // Available
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            // 1. Validate
+            if (string.IsNullOrWhiteSpace(txtFullName.Text) ||
+                string.IsNullOrWhiteSpace(txtUsername.Text) ||
+                string.IsNullOrWhiteSpace(txtPassword.Text))
+            {
+                MessageBox.Show("Vui lòng nhập đầy đủ thông tin.");
+                return;
+            }
+            string roleVN = cboRole.SelectedItem.ToString();
+            string roleEN = (roleVN == "Quản trị viên") ? "Admin" : "User";
+
+            string statusVN = cboStatus.SelectedItem.ToString();
+            string statusEN = (statusVN == "Sẵn sàng") ? "Available" : "Busy";
+
+            // 2. Tạo user entity với giá trị Tiếng Anh
+            var user = new User
+            {
+                FullName = txtFullName.Text.Trim(),
+                Username = txtUsername.Text.Trim(),
+                PasswordHash = HashPassword(txtPassword.Text),
+                Role = roleEN,    // Lưu "Admin" hoặc "User"
+                Status = statusEN // Lưu "Available" hoặc "Busy"
+            };
+
+            try
+            {
+                // 3. Gọi BLL
+                _authService.Add(user);
+
+                MessageBox.Show("Thêm tài khoản thành công!");
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.Message);
+            }
+        }
+
+        private void btnHuy_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

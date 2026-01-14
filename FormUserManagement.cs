@@ -22,55 +22,148 @@ namespace PMS
             
             _userService = userService;
         }
-        
-        private void LoadUsers()
+        private void HideNavigationColumns()
         {
-            dgvUsers.DataSource = _userService.GetAll();
-            dgvUsers.AutoGenerateColumns = true;
+            if (dgvUsers.Columns["ManagedProjects"] != null)
+                dgvUsers.Columns["ManagedProjects"].Visible = false;
 
-            dgvUsers.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dgvUsers.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-            dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            if (dgvUsers.Columns["ProjectMemberships"] != null)
+                dgvUsers.Columns["ProjectMemberships"].Visible = false;
 
         }
+        private void LoadUsers()
+        {
+            // 1. Nạp dữ liệu
+            dgvUsers.DataSource = null;
+            dgvUsers.DataSource = _userService.GetAll();
+
+            // 2. Ẩn các cột không cần thiết
+            HideNavigationColumns();
+
+            // 3. Việt hóa Tiêu đề cột (Header Text)
+            if (dgvUsers.Columns["UserID"] != null) dgvUsers.Columns["UserID"].HeaderText = "Mã NV";
+            if (dgvUsers.Columns["FullName"] != null) dgvUsers.Columns["FullName"].HeaderText = "Họ và Tên";
+            if (dgvUsers.Columns["Username"] != null) dgvUsers.Columns["Username"].HeaderText = "Tên đăng nhập";
+            if (dgvUsers.Columns["Role"] != null) dgvUsers.Columns["Role"].HeaderText = "Vai trò";
+            if (dgvUsers.Columns["Status"] != null) dgvUsers.Columns["Status"].HeaderText = "Trạng thái";
+
+            // Ẩn cột mật khẩu để bảo mật và đẹp giao diện
+            if (dgvUsers.Columns["PasswordHash"] != null) dgvUsers.Columns["PasswordHash"].Visible = false;
+
+            // 4. Áp dụng Style chuẩn (Màu Header đen, chữ trắng, khoảng cách dòng)
+            StyleDGV(dgvUsers);
+        }
+        //private void LoadUsers()
+        //{
+        //    dgvUsers.AutoGenerateColumns = true;
+        //    dgvUsers.DataSource = null;
+        //    dgvUsers.DataSource = _userService.GetAll();
+
+        //    HideNavigationColumns();
+
+        //    // ================= CẤU HÌNH CHUNG =================
+        //    dgvUsers.EnableHeadersVisualStyles = false;
+        //    dgvUsers.RowHeadersVisible = false;
+        //    dgvUsers.MultiSelect = false;
+        //    dgvUsers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
+        //    dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        //    dgvUsers.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+        //    dgvUsers.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+        //    // ================= HEADER =================
+        //    dgvUsers.ColumnHeadersHeight = 50;
+        //    dgvUsers.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 23, 42);
+        //    dgvUsers.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+        //    dgvUsers.ColumnHeadersDefaultCellStyle.Font =
+        //        new Font("Segoe UI Semibold", 12, FontStyle.Bold);
+        //    dgvUsers.ColumnHeadersDefaultCellStyle.Alignment =
+        //        DataGridViewContentAlignment.MiddleCenter;
+
+        //    // ================= ROW =================
+        //    dgvUsers.DefaultCellStyle.Font =
+        //        new Font("Segoe UI", 12, FontStyle.Regular);
+        //    dgvUsers.DefaultCellStyle.ForeColor = Color.FromArgb(31, 41, 55);
+        //    dgvUsers.DefaultCellStyle.BackColor = Color.White;
+        //    dgvUsers.DefaultCellStyle.Alignment =
+        //        DataGridViewContentAlignment.MiddleCenter;
+        //    dgvUsers.DefaultCellStyle.Padding = new Padding(10);
+
+        //    dgvUsers.RowsDefaultCellStyle.SelectionBackColor =
+        //        Color.FromArgb(224, 242, 254);
+        //    dgvUsers.RowsDefaultCellStyle.SelectionForeColor =
+        //        Color.FromArgb(2, 132, 199);
+
+        //    dgvUsers.AlternatingRowsDefaultCellStyle.BackColor =
+        //        Color.FromArgb(248, 250, 252);
+
+        //    // ================= VIỀN =================
+        //    dgvUsers.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+        //    dgvUsers.GridColor = Color.FromArgb(226, 232, 240);
+        //    //=========================================
+        //    // ================= VIỆT HÓA HEADER TEXT =================
+        //    if (dgvUsers.Columns["UserID"] != null)
+        //        dgvUsers.Columns["UserID"].HeaderText = "Mã NV";
+
+        //    if (dgvUsers.Columns["FullName"] != null)
+        //        dgvUsers.Columns["FullName"].HeaderText = "Họ và Tên";
+
+        //    if (dgvUsers.Columns["Username"] != null)
+        //        dgvUsers.Columns["Username"].HeaderText = "Tên đăng nhập";
+
+        //    if (dgvUsers.Columns["PasswordHash"] != null)
+        //        dgvUsers.Columns["PasswordHash"].HeaderText = "Mật khẩu";
+
+        //    if (dgvUsers.Columns["Role"] != null)
+        //        dgvUsers.Columns["Role"].HeaderText = "Vai trò";
+
+        //    if (dgvUsers.Columns["Status"] != null)
+        //        dgvUsers.Columns["Status"].HeaderText = "Trạng thái";
+
+        //}
+
 
         private void FormUserManagement_Load(object sender, EventArgs e)
         {
 
+            cboRole.Items.Clear();
+            cboRole.Items.AddRange(new[] { "Quản trị viên", "Nhân viên" });
+
+            cboStatus.Items.Clear();
+            cboStatus.Items.AddRange(new[] { "Sẵn sàng", "Đang bận", "Ngừng hoạt động" });
             cboSearchStatus.Items.Clear();
-            cboSearchStatus.Items.AddRange(new[] { "Tất cả trạng thái", "Available", "Busy" });
+            cboSearchStatus.Items.AddRange(new[]
+                        {
+                "Tất cả trạng thái",
+                "Sẵn sàng",
+                "Đang bận",
+                "Ngừng hoạt động"
+            });
             cboSearchStatus.SelectedIndex = 0;
+
 
             StyleRefresh(btnReload);
             StyleDelete(btnDelete);
             StyleUpdate(btnUpdate);
             StyleAdd(btnAdd);
+            StyleSave(btnSave);
 
 
-            SetBorderRadius(panelEdit, 10);
-            SetBorderRadius(txtSearchName, 5);
-            SetBorderRadius(dgvUsers, 5);
-            //SetBorderRadius(txtFullName, 5);
-
-
-
+            dgvUsers.CellFormatting += dgvUsers_CellFormatting;
+            dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvUsers.AutoGenerateColumns = true;
 
             LoadUsers();
             StyleDGV(dgvUsers);
-
-            dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            StyleUpdate(btnUpdate);
 
         }
 
         private void dgvUsers_CellContentClick(object sender, DataGridViewCellEventArgs e)
 
         {
-            cboRole.Items.AddRange(new[] { "Admin", "Employee" });
-            cboStatus.Items.AddRange(new[] { "Available", "Busy" });
-            cboSearchStatus.SelectedIndex = 0;
-            LoadUsers();
+          
             if (e.RowIndex < 0) return;
 
             var row = dgvUsers.Rows[e.RowIndex];
@@ -96,27 +189,40 @@ namespace PMS
         }
 
 
-        private void ClearForm()
+        //private void ClearForm()
+        //{
+        //    txtFullName.Clear();
+        //    txtUsername.Clear();
+        //    txtPassword.Clear();
+        //    cboRole.SelectedIndex = -1;
+        //    cboStatus.SelectedIndex = -1;
+        //}
+        private void ClearEditPanel()
         {
             txtFullName.Clear();
             txtUsername.Clear();
             txtPassword.Clear();
-            cboRole.SelectedIndex = -1;
-            cboStatus.SelectedIndex = -1;
-        }
-        private void ClearEditPanel()
-        {
-            
-            txtFullName.Text = "";
-            txtUsername.Text = "";
-            txtPassword.Text = "";
+
             cboRole.SelectedIndex = -1;
             cboStatus.SelectedIndex = -1;
 
-            // Bỏ chọn DataGridView
             dgvUsers.ClearSelection();
 
-         
+        }
+        private void ResetFilter()
+        {
+            // Text search
+            txtSearchName.Text = "Tìm kiếm theo tên...";
+            txtSearchName.ForeColor = Color.Gray;
+
+            // Combo trạng thái
+            cboSearchStatus.SelectedIndex = 0; // "Tất cả trạng thái"
+
+            // Reload toàn bộ danh sách
+            LoadUsers();
+
+            // Bỏ chọn dòng
+            dgvUsers.ClearSelection();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -161,8 +267,8 @@ namespace PMS
                 UserID = id,
                 FullName = txtFullName.Text,
                 Username = txtUsername.Text,
-                Role = cboRole.Text,
-                Status = cboStatus.Text,
+                Role = ConvertRoleToEN(cboRole.Text),
+                Status = ConvertStatusToEN(cboStatus.Text),
                 PasswordHash = txtPassword.Text // có thể rỗng
             };
             _userService.Update(user);
@@ -171,9 +277,17 @@ namespace PMS
 
         private void btnReload_Click(object sender, EventArgs e)
         {
-            
+            // 1. Reset các ô nhập liệu
             ClearEditPanel();
-           
+
+            // 2. Reset ô tìm kiếm
+            txtSearchName.Text = "🔍 Nhập họ tên để tìm kiếm...";
+            txtSearchName.ForeColor = Color.Gray;
+            cboSearchStatus.SelectedIndex = 0;
+
+            // 3. Gọi lại hàm LoadUsers (Hàm này đã có StyleDGV nên sẽ luôn đẹp)
+            LoadUsers();
+
         }
         private void LoadUserToPanel(DataGridViewRow row)
         {
@@ -181,10 +295,11 @@ namespace PMS
 
             txtFullName.Text = row.Cells["FullName"].Value.ToString();
             txtUsername.Text = row.Cells["Username"].Value.ToString();
-            cboRole.Text = row.Cells["Role"].Value.ToString();
-            cboStatus.Text = row.Cells["Status"].Value.ToString();
 
-            // Không hiển thị password
+            // Chuyển sang tiếng Việt để hiển thị
+            cboRole.Text = ConvertRoleToVN(row.Cells["Role"].Value.ToString());
+            cboStatus.Text = ConvertStatusToVN(row.Cells["Status"].Value.ToString());
+
             txtPassword.Text = "";
         }
 
@@ -217,19 +332,52 @@ namespace PMS
         }
         private void SearchUsers()
         {
-            string keyword = txtSearchName.ForeColor == Color.Gray
-                ? ""
+            // 1. Lấy từ khóa tìm kiếm (Xử lý Placeholder)
+            string keyword = (txtSearchName.ForeColor == Color.Gray)
+                ? string.Empty
                 : txtSearchName.Text.Trim();
 
-            string status = cboSearchStatus.SelectedItem != null
+            // 2. Lấy trạng thái từ ComboBox
+            string statusVN = cboSearchStatus.SelectedItem != null
                 ? cboSearchStatus.SelectedItem.ToString()
                 : "Tất cả trạng thái";
 
-            var data = _userService.SearchUsers(keyword, status);
+            // 3. Chuyển đổi ngôn ngữ VN -> EN
+            string statusEN = null;
 
-            dgvUsers.DataSource = null;   // BẮT BUỘC
-            dgvUsers.DataSource = data;
+            if (statusVN == "Sẵn sàng")
+            {
+                statusEN = "Available";
+            }
+            else if (statusVN == "Đang bận")
+            {
+                statusEN = "Busy";
+            }
+            // THÊM ĐOẠN NÀY: Xử lý tìm kiếm cho trạng thái Ngừng hoạt động
+            else if (statusVN == "Ngừng hoạt động")
+            {
+                statusEN = "Inactive";
+            }
+
+            try
+            {
+                // 4. Gọi service để lấy dữ liệu (Sử dụng statusEN đã bao gồm Inactive)
+                var data = _userService.SearchUsers(keyword, statusEN);
+
+                // 5. Cập nhật giao diện DataGridView
+                dgvUsers.DataSource = null;
+                dgvUsers.DataSource = data;
+
+                // 6. Định dạng lại cột
+                HideNavigationColumns();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Thông báo",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         private void txtSearchName_TextChanged(object sender, EventArgs e)
         {
@@ -278,42 +426,6 @@ namespace PMS
                 e.Graphics.DrawPath(pen, path);
             }
         }
-
-        private void cboStatus_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboRole_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void labelRole_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboRole_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cboRole_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-
-        }
         public static void SetBorderRadius(Control control, int radius)
         {
             GraphicsPath path = new GraphicsPath();
@@ -359,8 +471,6 @@ namespace PMS
             btn.FlatAppearance.BorderSize = 1;
             btn.FlatAppearance.BorderColor = Color.LightGray;
             btn.UseVisualStyleBackColor = false;
-
-            SetRounded(btn, 8);
 
             btn.MouseEnter += (s, e) =>
                 btn.BackColor = Color.FromArgb(245, 245, 245);
@@ -429,6 +539,31 @@ namespace PMS
             btn.MouseEnter += (s, e) => btn.BackColor = hover;
             btn.MouseLeave += (s, e) => btn.BackColor = normal;
         }
+        private void StyleSave(Guna.UI2.WinForms.Guna2Button btn)
+        {
+            btn.Text = "Lưu";
+            btn.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+
+            btn.FillColor = Color.FromArgb(59, 130, 246);      // xanh Save
+            btn.HoverState.FillColor = Color.FromArgb(37, 99, 235);
+
+            btn.ForeColor = Color.White;
+
+            btn.BorderRadius = 8;
+            btn.BorderThickness = 0;
+
+            btn.ImageAlign = HorizontalAlignment.Left;
+            btn.ImageOffset = new Point(5, 0);
+            btn.TextOffset = new Point(10, 0);
+
+            btn.Cursor = Cursors.Hand;
+
+            // Disabled state
+            btn.DisabledState.FillColor = Color.FromArgb(203, 213, 225);
+            btn.DisabledState.ForeColor = Color.FromArgb(100, 116, 139);
+        }
+
+
 
 
         private void label3_Click(object sender, EventArgs e)
@@ -442,141 +577,124 @@ namespace PMS
         }
         void StyleDGV(DataGridView dgv)
         {
-            dgv.BorderStyle = BorderStyle.None;
-            dgv.CellBorderStyle = DataGridViewCellBorderStyle.None;
-            dgv.GridColor = Color.White;
-
             dgv.EnableHeadersVisualStyles = false;
-            dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-
-            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.White;
-            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.Gray;
-            dgv.ColumnHeadersDefaultCellStyle.Font =
-                new Font("Segoe UI", 10, FontStyle.Bold);
-            dgv.ColumnHeadersHeight = 45;
-
-            dgv.DefaultCellStyle.BackColor = Color.White;
-            dgv.DefaultCellStyle.ForeColor = Color.Black;
-            dgv.DefaultCellStyle.Font =
-                new Font("Segoe UI", 10);
-            dgv.DefaultCellStyle.SelectionBackColor =
-                Color.FromArgb(240, 248, 255);
-            dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-
-            dgv.RowTemplate.Height = 55;
             dgv.RowHeadersVisible = false;
+            dgv.MultiSelect = false;
+            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            // Màu Header (Giống hình bên phải: Đen navy/Xám đậm)
+            dgv.ColumnHeadersHeight = 50;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 23, 42);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 12, FontStyle.Bold);
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Màu dòng dữ liệu và độ cao dòng
+            dgv.RowTemplate.Height = 55;
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            dgv.DefaultCellStyle.Padding = new Padding(10);
+            dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Màu khi chọn dòng
+            dgv.RowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(224, 242, 254);
+            dgv.RowsDefaultCellStyle.SelectionForeColor = Color.FromArgb(2, 132, 199);
         }
 
         private void dgvUsers_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (dgvUsers.Columns[e.ColumnIndex].Name == "Role" && e.Value != null)
+            if (e.RowIndex < 0 || e.Value == null) return;
+
+            // Xử lý cột Vai trò
+            if (dgvUsers.Columns[e.ColumnIndex].Name == "Role")
             {
                 string role = e.Value.ToString();
+                e.Value = ConvertRoleToVN(role); // Đổi sang tiếng Việt
+                e.FormattingApplied = true;
 
-                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                // Style cho ô Vai trò (Nền xanh nhạt, chữ đậm)
                 e.CellStyle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-
                 if (role == "Admin")
                 {
                     e.CellStyle.BackColor = Color.FromArgb(224, 231, 255);
                     e.CellStyle.ForeColor = Color.FromArgb(67, 56, 202);
                 }
-                else
-                {
-                    e.CellStyle.BackColor = Color.FromArgb(229, 231, 235);
-                    e.CellStyle.ForeColor = Color.FromArgb(55, 65, 81);
-                }
             }
 
-            if (dgvUsers.Columns[e.ColumnIndex].Name == "Status" && e.Value != null)
+            // Xử lý cột Trạng thái
+            if (dgvUsers.Columns[e.ColumnIndex].Name == "Status")
             {
                 string status = e.Value.ToString();
+                e.Value = ConvertStatusToVN(status); // Đổi sang tiếng Việt
+                e.FormattingApplied = true;
 
-                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 e.CellStyle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-
                 if (status == "Available")
-                {
+                { // Sẵn sàng
                     e.CellStyle.BackColor = Color.FromArgb(220, 252, 231);
                     e.CellStyle.ForeColor = Color.FromArgb(22, 163, 74);
                 }
                 else if (status == "Busy")
-                {
+                { // Đang bận
                     e.CellStyle.BackColor = Color.FromArgb(254, 243, 199);
                     e.CellStyle.ForeColor = Color.FromArgb(202, 138, 4);
                 }
-                else
-                {
-                    e.CellStyle.BackColor = Color.FromArgb(229, 231, 235);
-                    e.CellStyle.ForeColor = Color.Gray;
+                else if (status == "Inactive")
+                { // Ngừng hoạt động
+                    e.CellStyle.BackColor = Color.FromArgb(243, 244, 246);
+                    e.CellStyle.ForeColor = Color.FromArgb(107, 114, 128);
                 }
             }
-           
-            if (dgvUsers.Columns[e.ColumnIndex].Name == "Action")
-            {
-                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                e.CellStyle.Font = new Font("Segoe UI ", 14);
-                e.CellStyle.ForeColor = Color.FromArgb(100, 116, 139);
-            }
-            // Chữ trong cell
-            dgvUsers.DefaultCellStyle.Font =
-                new Font("Segoe UI", 12, FontStyle.Regular);
-
-            // Chữ header
-            dgvUsers.ColumnHeadersDefaultCellStyle.Font =
-                new Font("Segoe UI", 12, FontStyle.Bold);
-
-
         }
 
-     
+
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-
+                
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (_selectedUserId == null)
+            private void btnSave_Click(object sender, EventArgs e)
             {
-                MessageBox.Show("Vui lòng chọn nhân viên cần sửa trước khi lưu");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtFullName.Text) ||
-                string.IsNullOrWhiteSpace(txtUsername.Text) ||
-                cboRole.SelectedIndex < 0 ||
-                cboStatus.SelectedIndex < 0)
-            {
-                MessageBox.Show("Vui lòng nhập đầy đủ thông tin");
-                return;
-            }
-
-            try
-            {
-                User user = new User
+                if (_selectedUserId == null)
                 {
-                    UserID = _selectedUserId.Value,
-                    FullName = txtFullName.Text.Trim(),
-                    Username = txtUsername.Text.Trim(),
-                    Role = cboRole.Text,
-                    Status = cboStatus.Text,
-                    PasswordHash = txtPassword.Text.Trim() // có thể rỗng
-                };
+                    MessageBox.Show("Vui lòng chọn nhân viên cần sửa trước khi lưu");
+                    return;
+                }
 
-                _userService.Update(user);
+                if (string.IsNullOrWhiteSpace(txtFullName.Text) ||
+                    string.IsNullOrWhiteSpace(txtUsername.Text) ||
+                    cboRole.SelectedIndex < 0 ||
+                    cboStatus.SelectedIndex < 0)
+                {
+                    MessageBox.Show("Vui lòng nhập đầy đủ thông tin");
+                    return;
+                }
 
-                MessageBox.Show("Cập nhật nhân viên thành công", "Thông báo");
+                try
+                {
+                    User user = new User
+                    {
+                        UserID = _selectedUserId.Value,
+                        FullName = txtFullName.Text.Trim(),
+                        Username = txtUsername.Text.Trim(),
+                        Role = ConvertRoleToEN(cboRole.Text),
+                        Status = ConvertStatusToEN(cboStatus.Text),
+                        PasswordHash = txtPassword.Text.Trim() // có thể rỗng
+                    };
 
-                LoadUsers();        // reload danh sách
-                ClearEditPanel();  // clear panel chỉnh sửa
+                    _userService.Update(user);
+
+                    MessageBox.Show("Cập nhật nhân viên thành công", "Thông báo");
+
+                    LoadUsers();        // reload danh sách
+                    ClearEditPanel();  // clear panel chỉnh sửa
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi cập nhật: " + ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi cập nhật: " + ex.Message);
-            }
-        }
 
         private void dgvUsers_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -585,6 +703,44 @@ namespace PMS
             DataGridViewRow row = dgvUsers.Rows[e.RowIndex];
             LoadUserToPanel(row);
         }
+        private string ConvertRoleToVN(string role)
+        {
+            if (role == "Admin")
+                return "Quản trị viên";
+            if (role == "Employee")
+                return "Nhân viên";
+
+            return role;
+        }
+
+        private string ConvertRoleToEN(string roleVN)
+        {
+            if (roleVN == "Quản trị viên")
+                return "Admin";
+            if (roleVN == "Nhân viên")
+                return "Employee";
+
+            return roleVN;
+        }
+
+        private string ConvertStatusToVN(string status)
+        {
+            if (status == "Available") return "Sẵn sàng";
+            if (status == "Busy") return "Đang bận";
+            if (status == "Inactive") return "Ngừng hoạt động"; // Thêm dòng này
+
+            return status;
+        }
+
+        private string ConvertStatusToEN(string statusVN)
+        {
+            if (statusVN == "Sẵn sàng") return "Available";
+            if (statusVN == "Đang bận") return "Busy";
+            if (statusVN == "Ngừng hoạt động") return "Inactive"; // Thêm dòng này
+
+            return statusVN;
+        }
 
     }
 }
+

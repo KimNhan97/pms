@@ -1,5 +1,6 @@
 ﻿using Guna.UI2.WinForms;
 using PMS.BLL;
+using PMS.DAL;
 using PMS.Entities;
 using System;
 using System.Drawing;
@@ -12,11 +13,14 @@ namespace PMS
         private readonly IAuthService _authService;
 
         // Constructor có DI
-        public FormLogin(IAuthService authService)
+        // Constructor này sẽ đảm bảo luôn có Service
+        public FormLogin(IAuthService authService = null)
         {
             InitializeComponent();
-            _authService = authService;
-                
+
+            // Nếu authService truyền vào bị null (do gọi new FormLogin() từ nút Đăng xuất)
+            // thì tự khởi tạo mới một đối tượng Service.
+            _authService = authService ?? new AuthService(new UserRepository(new PMSDbContext()));
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -112,7 +116,7 @@ namespace PMS
             btnLogin.HoverState.FillColor = Color.FromArgb(37, 99, 235);
 
             // ===== FOOTER =====
-            lblFooter.Text = "© 2024 PMS. All rights reserved.";
+            lblFooter.Text = "© 2026 PMS. All rights reserved.";
             lblFooter.Font = new Font("Segoe UI", 10);
             lblFooter.ForeColor = Color.Gray;
             lblFooter.AutoSize = true;
@@ -194,6 +198,12 @@ namespace PMS
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Vui lòng nhập đầy đủ tài khoản và mật khẩu");
+                return;
+            }
+
             User user = _authService.Login(username, password);
 
             if (user == null)
@@ -207,10 +217,14 @@ namespace PMS
                 return;
             }
 
-            // Đăng nhập thành công
-            FormMain main = new FormMain(user);
-            this.Hide();
+            // ✅ LƯU USER TOÀN CỤC
+            Session.SetUser(user);
+
+            // ✅ MỞ MAIN
+            FormMain main = new FormMain();
             main.Show();
+
+            this.Hide();
         }
 
         private void btnClose_Click_1(object sender, EventArgs e)

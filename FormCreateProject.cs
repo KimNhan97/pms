@@ -1,14 +1,10 @@
-﻿using Autofac.Core;
-using PMS.BLL;
+﻿using PMS.BLL;
 using PMS.Entities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PMS
@@ -16,119 +12,196 @@ namespace PMS
     public partial class FormCreateProject : Form
     {
         private readonly IProjectService _service;
+        private readonly IAuthService _authService;
         private readonly bool _isEdit;
         private Project _project;
-        public FormCreateProject(IProjectService service)
+
+        // Constructor cho trường hợp THÊM MỚI
+        public FormCreateProject(IProjectService service, IAuthService authService)
         {
             InitializeComponent();
             _service = service;
+            _authService = authService;
             _isEdit = false;
         }
-        public FormCreateProject(IProjectService service, Project project)
+
+        // Constructor cho trường hợp CHỈNH SỬA
+        public FormCreateProject(IProjectService service, IAuthService authService, Project project)
         {
             InitializeComponent();
             _service = service;
+            _authService = authService;
             _isEdit = true;
             _project = project;
-
-            LoadProject();
-        }
-        void LoadProject()
-        {
-            txtProjectName.Text = _project.ProjectName;
-            txtDescription.Text = _project.Description;
-            dtpStartDate.Value = _project.StartDate;
-            dtpEndDate.Value = _project.Deadline;
         }
 
         private void FormCreateProject_Load(object sender, EventArgs e)
         {
-            dtpStartDate.BorderRadius = 8;
-            dtpStartDate.BorderColor = Color.FromArgb(37, 99, 235);
-            dtpStartDate.FillColor = Color.FromArgb(239, 246, 255);
-            dtpStartDate.ForeColor = Color.FromArgb(30, 64, 175);
-            dtpStartDate.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            SetupUIStyles();           // 1. Định dạng giao diện (bo góc, màu sắc)
+            LoadAdminsIntoComboBox();  // 2. Load danh sách người quản lý vào ComboBox
+            txtDescription.Enabled = true;
+            txtDescription.ReadOnly = false;
+            txtDescription.Focus();
+
+            if (_isEdit)
+            {
+                this.Text = "Sửa dự án";
+                label1.Text = "CẬP NHẬT DỰ ÁN"; // Đổi title trên form nếu có
+                btnSave.Text = "💾 Cập nhật";
+                LoadProjectData();     // 3. Đổ dữ liệu cũ vào các control
+            }
+            else
+            {
+                this.Text = "Tạo dự án mới";
+                btnSave.Text = "➕ Thêm mới";
+                // Mặc định ngày bắt đầu là hôm nay
+                dtpStartDate.Value = DateTime.Now;
+                dtpEndDate.Value = DateTime.Now.AddDays(7);
+                lblProgressPercent.Text = "0 %";
+            }
+        }
+
+        private void SetupUIStyles()
+        {
+            // Định dạng DateTimePicker
             dtpStartDate.Format = DateTimePickerFormat.Custom;
             dtpStartDate.CustomFormat = "dd/MM/yyyy";
-
-            dtpEndDate.BorderRadius = 8;
-            dtpEndDate.BorderColor = Color.FromArgb(220, 38, 38);
-            dtpEndDate.FillColor = Color.FromArgb(254, 242, 242);
-            dtpEndDate.ForeColor = Color.FromArgb(185, 28, 28);
-            dtpEndDate.Font = new Font("Segoe UI", 11, FontStyle.Bold);
             dtpEndDate.Format = DateTimePickerFormat.Custom;
             dtpEndDate.CustomFormat = "dd/MM/yyyy";
 
-
-            txtProjectName.BorderRadius = 8;
-            txtProjectName.FillColor = Color.FromArgb(239, 246, 255);   // nền xanh nhạt
-            txtProjectName.BorderColor = Color.FromArgb(37, 99, 235);   // viền xanh
-            txtProjectName.ForeColor = Color.FromArgb(30, 64, 175);    // chữ xanh đậm
-            txtProjectName.Font = new Font("Segoe UI", 12);
+            // Định dạng TextBox Project Name
             txtProjectName.PlaceholderText = "Nhập tên dự án...";
-            txtProjectName.PlaceholderForeColor = Color.FromArgb(148, 163, 184);
-            txtProjectName.FocusedState.BorderColor = Color.FromArgb(29, 78, 216);
-            txtProjectName.HoverState.BorderColor = Color.FromArgb(37, 99, 235);
 
-            txtDescription.BorderRadius = 8;
-            txtDescription.FillColor = Color.FromArgb(248, 250, 252);  // xám rất nhạt
-            txtDescription.BorderColor = Color.FromArgb(203, 213, 225);
-            txtDescription.ForeColor = Color.FromArgb(15, 23, 42);
-            txtDescription.Font = new Font("Segoe UI", 12);
+            // Định dạng TextBox Description
             txtDescription.Multiline = true;
             txtDescription.PlaceholderText = "Nhập mô tả dự án...";
-            txtDescription.PlaceholderForeColor = Color.FromArgb(148, 163, 184);
-            txtDescription.FocusedState.BorderColor = Color.FromArgb(37, 99, 235);
-            txtDescription.HoverState.BorderColor = Color.FromArgb(148, 163, 184);
+
+            // Định dạng ProgressBar (Guna2)
+            prgProgress.Minimum = 0;
+            prgProgress.Maximum = 100;
         }
 
-
-        private void btnHuy_Click(object sender, EventArgs e)
+        private void LoadAdminsIntoComboBox()
         {
-            this.Close();
+            try
+            {
+                var admins = _authService.GetAll()
+                    .Where(u => u.Role != null &&
+                                u.Role.Trim().Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
+                cmbManager.DataSource = admins;
+                cmbManager.DisplayMember = "FullName";
+                cmbManager.ValueMember = "UserID";
+                cmbManager.SelectedIndex = -1; // Mặc định không chọn ai
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi nạp danh sách Admin: " + ex.Message);
+            }
+        }
+
+        private void LoadProjectData()
+        {
+            if (_project == null) return;
+
+            // Đổ dữ liệu Text
+            txtProjectName.Text = _project.ProjectName;
+            txtDescription.Text = _project.Description;
+
+            // Đổ dữ liệu Date
+            if (_project.StartDate >= dtpStartDate.MinDate) dtpStartDate.Value = _project.StartDate;
+            if (_project.Deadline >= dtpEndDate.MinDate) dtpEndDate.Value = _project.Deadline;
+
+            // Đổ dữ liệu Manager
+            if (_project.ManagerID != null)
+            {
+                cmbManager.SelectedValue = _project.ManagerID;
+            }
+
+            // Đổ dữ liệu Progress
+            int progress = _project.Progress;
+            prgProgress.Value = Math.Max(0, Math.Min(100, progress));
+            lblProgressPercent.Text = prgProgress.Value + " %";
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            // 1. Validation cơ bản
             if (string.IsNullOrWhiteSpace(txtProjectName.Text))
             {
-                MessageBox.Show("Tên dự án không được để trống");
+                MessageBox.Show("Vui lòng nhập tên dự án!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtProjectName.Focus();
                 return;
             }
 
-            if (dtpEndDate.Value < dtpStartDate.Value)
+            if (dtpEndDate.Value.Date < dtpStartDate.Value.Date)
             {
-                MessageBox.Show("Ngày kết thúc phải sau ngày bắt đầu");
+                MessageBox.Show("Ngày kết thúc không được nhỏ hơn ngày bắt đầu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (_isEdit)
-            {
-                _project.ProjectName = txtProjectName.Text;
-                _project.Description = txtDescription.Text;
-                _project.StartDate = dtpStartDate.Value;
-                _project.Deadline = dtpEndDate.Value;
+            // 2. Lấy dữ liệu từ giao diện
+            int? managerId = cmbManager.SelectedValue != null ? (int)cmbManager.SelectedValue : (int?)null;
 
-                _service.Update(_project);
-            }
-            else
+            try
             {
-                Project p = new Project
+                if (_isEdit)
                 {
-                    ProjectName = txtProjectName.Text,
-                    Description = txtDescription.Text,
-                    StartDate = dtpStartDate.Value,
-                    Deadline = dtpEndDate.Value,
-                    Progress = 0
-                };
+                    // CẬP NHẬT
+                    _project.ProjectName = txtProjectName.Text.Trim();
+                    _project.Description = txtDescription.Text.Trim();
+                    _project.StartDate = dtpStartDate.Value;
+                    _project.Deadline = dtpEndDate.Value;
+                    _project.ManagerID = managerId;
+                    // Progress thường được cập nhật ở form Task, nhưng nếu cho sửa ở đây:
+                    _project.Progress = prgProgress.Value;
 
-                _service.Add(p);
+                    _service.Update(_project);
+                    MessageBox.Show("Cập nhật dự án thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    // THÊM MỚI
+                    Project newProject = new Project
+                    {
+                        ProjectName = txtProjectName.Text.Trim(),
+                        Description = txtDescription.Text.Trim(),
+                        StartDate = dtpStartDate.Value,
+                        Deadline = dtpEndDate.Value,
+                        ManagerID = managerId,
+                        Progress = 0,
+                        IsDeleted = false
+                    };
+
+                    _service.Add(newProject);
+                    MessageBox.Show("Thêm dự án mới thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi lưu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-            this.DialogResult = DialogResult.OK;
+        private void btnHuy_Click(object sender, EventArgs e)
+        {
             this.Close();
         }
 
+        // Cập nhật label phần trăm khi kéo thanh progress (nếu prgProgress là TrackBar/HScrollBar)
+        // Nếu prgProgress là ProgressBar thuần, bạn có thể thêm NumericUpDown để chỉnh %
+        private void prgProgress_ValueChanged(object sender, EventArgs e)
+        {
+            lblProgressPercent.Text = prgProgress.Value + " %";
+        }
+
+        private void txtDescription_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
