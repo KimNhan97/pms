@@ -57,10 +57,10 @@ namespace PMS
                 return;
             }
             string roleVN = cboRole.SelectedItem.ToString();
-            string roleEN = (roleVN == "Quản trị viên") ? "Admin" : "User";
+            string roleEN = (roleVN == "Quản trị viên") ? "Admin" : "Employee";
 
             string statusVN = cboStatus.SelectedItem.ToString();
-            string statusEN = (statusVN == "Sẵn sàng") ? "Available" : "Busy";
+            string statusEN = "Available"; // luôn mặc định
 
             // 2. Tạo user entity với giá trị Tiếng Anh
             var user = new User
@@ -69,7 +69,8 @@ namespace PMS
                 Username = txtUsername.Text.Trim(),
                 PasswordHash = HashPassword(txtPassword.Text),
                 Role = roleEN,    // Lưu "Admin" hoặc "User"
-                Status = statusEN // Lưu "Available" hoặc "Busy"
+                Status = statusEN, // Lưu "Available" hoặc "Busy"
+
             };
 
             try
@@ -83,8 +84,13 @@ namespace PMS
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message);
+                var msg = ex.InnerException != null
+                    ? ex.InnerException.Message
+                    : ex.Message;
+
+                MessageBox.Show("Lỗi: " + msg);
             }
+
         }
 
         private void btnHuy_Click(object sender, EventArgs e)

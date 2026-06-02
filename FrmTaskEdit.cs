@@ -19,15 +19,30 @@ namespace PMS
             InitializeComponent();
             _taskService = taskService;
             _isEdit = false;
+            _task = null; // tạo ở btnSave
+
         }
 
         // ================= EDIT =================
         public FrmTaskEdit(ITaskService taskService, TaskEntity task)
-            : this(taskService)
+     : this(taskService)
         {
+            if (task == null)
+            {
+                MessageBox.Show(
+                    "Không thể chỉnh sửa công việc do dữ liệu rỗng.",
+                    "Lỗi dữ liệu",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                Close();
+                return;
+            }
+
             _task = task;
             _isEdit = true;
         }
+
+
 
         // ================= LOAD =================
         private void FrmTaskEdit_Load(object sender, EventArgs e)
@@ -152,9 +167,7 @@ namespace PMS
         }
 
         // ================= SAVE =================
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-        }
+
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
@@ -163,12 +176,9 @@ namespace PMS
 
         private void btnSave_Click_1(object sender, EventArgs e)
         {
-
-            // ===== VALIDATE =====
             if (string.IsNullOrWhiteSpace(txtTaskName.Text))
             {
                 MessageBox.Show("Vui lòng nhập tên công việc");
-                txtTaskName.Focus();
                 return;
             }
 
@@ -184,59 +194,58 @@ namespace PMS
                 return;
             }
 
-            // ===== MAP DATA =====
-            if (_task == null)
-                _task = new TaskEntity();
+            TaskEntity task;
 
-            _task.TaskName = txtTaskName.Text.Trim();
-            _task.ProjectId = Convert.ToInt32(cboProject.SelectedValue);
+            if (_isEdit)
+            {
+                if (_task == null)
+                {
+                    MessageBox.Show("Không tải được dữ liệu công việc để chỉnh sửa.");
+                    return;
+                }
+                task = _task;
+            }
+            else
+            {
+                task = new TaskEntity();
+            }
 
-            // Chuyển từ Tiếng Việt sang English để lưu DB
+            task.TaskName = txtTaskName.Text.Trim();
+            task.ProjectId = (int)cboProject.SelectedValue;
+
             string statusVN = cboStatus.SelectedItem.ToString();
-            string statusEN = "Pending"; // Mặc định
+            string statusEN = "Pending";
 
             if (statusVN == "Đang thực hiện") statusEN = "Doing";
             else if (statusVN == "Hoàn thành") statusEN = "Done";
             else if (statusVN == "Đã hủy") statusEN = "Cancelled";
 
-            _task.Status = statusEN;
+            task.Status = statusEN;
+            task.StartDate = dtStart.Value.Date;
+            task.Deadline = dtDeadline.Value.Date;
 
-            _task.StartDate = dtStart.Value.Date;
-            _task.Deadline = dtDeadline.Value.Date;
-
-            _task.AssignedTo =
-                cboUser.SelectedIndex > 0
-                ? (int?)Convert.ToInt32(cboUser.SelectedValue)
+            task.AssignedTo = cboUser.SelectedIndex > 0
+                ? (int?)cboUser.SelectedValue
                 : null;
-            if (cboUser.SelectedIndex > 0)
-            {
-                // Lấy đối tượng User đang được chọn trong ComboBox
-                var selectedUser = (User)cboUser.SelectedItem;
 
-                // Kiểm tra nếu tài khoản này có trạng thái Ngừng hoạt động
-                if (selectedUser.Status == "Inactive")
-                {
-                    MessageBox.Show("Nhân viên này hiện đang 'Ngừng hoạt động'. \nVui lòng chọn nhân viên khác để phân công!",
-                                    "Ràng buộc nhân sự", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    cboUser.Focus();
-                    return;
-                }
-            }
-            // ===== SAVE =====
+            if (!Session.IsAdmin && !task.AssignedTo.HasValue)
+                task.AssignedTo = Session.CurrentUser.UserID;
+
             try
             {
                 if (_isEdit)
-                    _taskService.Update(_task);
+                    _taskService.Update(task);
                 else
-                    _taskService.Add(_task);
+                    _taskService.Add(task);
 
                 DialogResult = DialogResult.OK;
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi lưu công việc:\n" + ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
+
     }
 }

@@ -79,43 +79,43 @@ namespace PMS
         }
 
 
-        private void ApplyFilter()
-        {
-            string keyword = txtKeyword.Text.Trim();
+        //private void ApplyFilter()
+        //{
+        //    string keyword = txtKeyword.Text.Trim();
 
-            int? projectId = cboProject.SelectedIndex > 0
-                ? (int?)Convert.ToInt32(cboProject.SelectedValue)
-                : null;
+        //    int? projectId = cboProject.SelectedIndex > 0
+        //        ? (int?)Convert.ToInt32(cboProject.SelectedValue)
+        //        : null;
 
-            int? userId = cboUser.SelectedIndex > 0
-                ? (int?)Convert.ToInt32(cboUser.SelectedValue)
-                : null;
+        //    int? userId = cboUser.SelectedIndex > 0
+        //        ? (int?)Convert.ToInt32(cboUser.SelectedValue)
+        //        : null;
 
-            string status = cboStatus.SelectedIndex > 0
-                ? cboStatus.Text
-                : null;
+        //    string status = cboStatus.SelectedIndex > 0
+        //        ? cboStatus.Text
+        //        : null;
 
-            if (Session.IsAdmin)
-            {
-                dgvTask.DataSource = _taskService.SearchTasks(
-                    keyword,
-                    projectId,
-                    userId,
-                    status
-                );
-            }
-            else
-            {
-                // User chỉ tìm trong task của mình
-                dgvTask.DataSource = _taskService.SearchTasks(
-                    keyword,
-                    projectId,
-                    Session.CurrentUser.UserID,
-                    status
-                );
-            }
+        //    if (Session.IsAdmin)
+        //    {
+        //        dgvTask.DataSource = _taskService.SearchTasks(
+        //            keyword,
+        //            projectId,
+        //            userId,
+        //            status
+        //        );
+        //    }
+        //    else
+        //    {
+        //        // User chỉ tìm trong task của mình
+        //        dgvTask.DataSource = _taskService.SearchTasks(
+        //            keyword,
+        //            projectId,
+        //            Session.CurrentUser.UserID,
+        //            status
+        //        );
+        //    }
 
-        }
+        //}
         private void InitControls()
         {
             // Màu sắc chủ đạo
@@ -404,7 +404,7 @@ namespace PMS
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            using (var frm = new FrmTaskEdit(_taskService, null))
+            using (var frm = new FrmTaskEdit(_taskService))
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                     LoadGrid();

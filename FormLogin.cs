@@ -195,6 +195,7 @@ namespace PMS
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Button Click");
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 

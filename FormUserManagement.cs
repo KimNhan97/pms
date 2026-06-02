@@ -13,8 +13,7 @@ namespace PMS
     public partial class FormUserManagement : Form
     {
         private readonly IAuthService _userService;
-
-
+        private Timer _searchTimer;
 
         public FormUserManagement(IAuthService userService)
         {
@@ -48,80 +47,12 @@ namespace PMS
             if (dgvUsers.Columns["Status"] != null) dgvUsers.Columns["Status"].HeaderText = "Trạng thái";
 
             // Ẩn cột mật khẩu để bảo mật và đẹp giao diện
-            if (dgvUsers.Columns["PasswordHash"] != null) dgvUsers.Columns["PasswordHash"].Visible = false;
+            //if (dgvUsers.Columns["PasswordHash"] != null) dgvUsers.Columns["PasswordHash"].Visible = false;
 
             // 4. Áp dụng Style chuẩn (Màu Header đen, chữ trắng, khoảng cách dòng)
             StyleDGV(dgvUsers);
         }
-        //private void LoadUsers()
-        //{
-        //    dgvUsers.AutoGenerateColumns = true;
-        //    dgvUsers.DataSource = null;
-        //    dgvUsers.DataSource = _userService.GetAll();
 
-        //    HideNavigationColumns();
-
-        //    // ================= CẤU HÌNH CHUNG =================
-        //    dgvUsers.EnableHeadersVisualStyles = false;
-        //    dgvUsers.RowHeadersVisible = false;
-        //    dgvUsers.MultiSelect = false;
-        //    dgvUsers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-        //    dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-        //    dgvUsers.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-        //    dgvUsers.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-
-        //    // ================= HEADER =================
-        //    dgvUsers.ColumnHeadersHeight = 50;
-        //    dgvUsers.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 23, 42);
-        //    dgvUsers.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-        //    dgvUsers.ColumnHeadersDefaultCellStyle.Font =
-        //        new Font("Segoe UI Semibold", 12, FontStyle.Bold);
-        //    dgvUsers.ColumnHeadersDefaultCellStyle.Alignment =
-        //        DataGridViewContentAlignment.MiddleCenter;
-
-        //    // ================= ROW =================
-        //    dgvUsers.DefaultCellStyle.Font =
-        //        new Font("Segoe UI", 12, FontStyle.Regular);
-        //    dgvUsers.DefaultCellStyle.ForeColor = Color.FromArgb(31, 41, 55);
-        //    dgvUsers.DefaultCellStyle.BackColor = Color.White;
-        //    dgvUsers.DefaultCellStyle.Alignment =
-        //        DataGridViewContentAlignment.MiddleCenter;
-        //    dgvUsers.DefaultCellStyle.Padding = new Padding(10);
-
-        //    dgvUsers.RowsDefaultCellStyle.SelectionBackColor =
-        //        Color.FromArgb(224, 242, 254);
-        //    dgvUsers.RowsDefaultCellStyle.SelectionForeColor =
-        //        Color.FromArgb(2, 132, 199);
-
-        //    dgvUsers.AlternatingRowsDefaultCellStyle.BackColor =
-        //        Color.FromArgb(248, 250, 252);
-
-        //    // ================= VIỀN =================
-        //    dgvUsers.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-        //    dgvUsers.GridColor = Color.FromArgb(226, 232, 240);
-        //    //=========================================
-        //    // ================= VIỆT HÓA HEADER TEXT =================
-        //    if (dgvUsers.Columns["UserID"] != null)
-        //        dgvUsers.Columns["UserID"].HeaderText = "Mã NV";
-
-        //    if (dgvUsers.Columns["FullName"] != null)
-        //        dgvUsers.Columns["FullName"].HeaderText = "Họ và Tên";
-
-        //    if (dgvUsers.Columns["Username"] != null)
-        //        dgvUsers.Columns["Username"].HeaderText = "Tên đăng nhập";
-
-        //    if (dgvUsers.Columns["PasswordHash"] != null)
-        //        dgvUsers.Columns["PasswordHash"].HeaderText = "Mật khẩu";
-
-        //    if (dgvUsers.Columns["Role"] != null)
-        //        dgvUsers.Columns["Role"].HeaderText = "Vai trò";
-
-        //    if (dgvUsers.Columns["Status"] != null)
-        //        dgvUsers.Columns["Status"].HeaderText = "Trạng thái";
-
-        //}
 
 
         private void FormUserManagement_Load(object sender, EventArgs e)
@@ -154,9 +85,18 @@ namespace PMS
             dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvUsers.AutoGenerateColumns = true;
 
-            LoadUsers();
-            StyleDGV(dgvUsers);
+            _searchTimer = new Timer();
+            _searchTimer.Interval = 300; // 300ms sau khi ngừng gõ
+            _searchTimer.Tick += (s, ev) =>
+            {
+                _searchTimer.Stop();
+                ApplyFilter();
+            };
+
+
+            StyleDGV(dgvUsers); 
             StyleUpdate(btnUpdate);
+            LoadUsers();
 
         }
 
@@ -281,12 +221,11 @@ namespace PMS
             ClearEditPanel();
 
             // 2. Reset ô tìm kiếm
-            txtSearchName.Text = "🔍 Nhập họ tên để tìm kiếm...";
             txtSearchName.ForeColor = Color.Gray;
             cboSearchStatus.SelectedIndex = 0;
 
             // 3. Gọi lại hàm LoadUsers (Hàm này đã có StyleDGV nên sẽ luôn đẹp)
-            LoadUsers();
+            LoadData();
 
         }
         private void LoadUserToPanel(DataGridViewRow row)
@@ -313,23 +252,7 @@ namespace PMS
             LoadUserToPanel(row);
         }
 
-        private void txtSearchName_Enter(object sender, EventArgs e)
-        {
-            if (txtSearchName.Text == "Nhập tên nhân viên...")
-            {
-                txtSearchName.Text = "";
-                txtSearchName.ForeColor = Color.Black;
-            }
-        }
-
-        private void txtSearchName_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtSearchName.Text))
-            {
-                txtSearchName.Text = "🔍 Nhập họ tên để tìm kiếm...";
-                txtSearchName.ForeColor = Color.Gray;
-            }
-        }
+     
         private void SearchUsers()
         {
             // 1. Lấy từ khóa tìm kiếm (Xử lý Placeholder)
@@ -378,16 +301,9 @@ namespace PMS
             }
         }
 
-
-        private void txtSearchName_TextChanged(object sender, EventArgs e)
-        {
-         
-            SearchUsers();
-        }
-
         private void cboSearchStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SearchUsers();
+            ApplyFilter();
         }
         private GraphicsPath GetRoundedPath(Rectangle rect, int radius)
         {
@@ -648,6 +564,7 @@ namespace PMS
         }
 
 
+        private void LoadData() => ApplyFilter();
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
@@ -734,12 +651,52 @@ namespace PMS
 
         private string ConvertStatusToEN(string statusVN)
         {
+
+            if (string.IsNullOrWhiteSpace(statusVN) || statusVN == "Tất cả trạng thái")
+                return null;
+
             if (statusVN == "Sẵn sàng") return "Available";
             if (statusVN == "Đang bận") return "Busy";
             if (statusVN == "Ngừng hoạt động") return "Inactive"; // Thêm dòng này
 
             return statusVN;
         }
+
+        private void txtSearchName_TextChanged_1(object sender, EventArgs e)
+        {
+            if (txtSearchName.ForeColor == Color.Gray)
+                return;
+
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
+
+        private void ApplyFilter()
+        {
+            // 1. Keyword (xử lý placeholder)
+            string keyword = (txtSearchName.ForeColor == Color.Gray)
+                ? null
+                : txtSearchName.Text.Trim();
+
+            // 2. Status
+            string statusVN = cboSearchStatus.SelectedItem?.ToString();
+            string statusEN = ConvertStatusToEN(statusVN);
+
+            try
+            {
+                var data = _userService.SearchUsers(keyword, statusEN);
+
+                dgvUsers.DataSource = null;
+                dgvUsers.DataSource = data;
+
+                HideNavigationColumns();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tìm kiếm: " + ex.Message);
+            }
+        }
+
 
     }
 }
