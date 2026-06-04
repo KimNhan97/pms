@@ -223,9 +223,10 @@
                 cboStatus.Font = new Font("Segoe UI", 12);
 
 
-                // 🔐 PHÂN QUYỀN GIAO DIỆN
-                if (!Session.IsAdmin)
-                {
+            // 🔐 PHÂN QUYỀN GIAO DIỆN
+            string currentRole = Session.CurrentUser.Role;
+            if (currentRole != "Admin" && currentRole != "PM")
+            {
                     btnAdd.Visible = false;
                     btnEdit.Visible = false;
                     btnDelete.Visible = false;

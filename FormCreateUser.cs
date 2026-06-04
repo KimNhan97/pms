@@ -21,6 +21,7 @@ namespace PMS
             InitializeComponent();
             _authService = authService;
         }
+
         private string HashPassword(string password)
         {
             using (var sha = System.Security.Cryptography.SHA256.Create())
@@ -33,17 +34,15 @@ namespace PMS
 
         private void FormCreateUser_Load(object sender, EventArgs e)
         {
-            // Nạp danh sách Role tiếng Việt
+            // Nạp danh sách Role tiếng Việt (Đã thêm Quản lý dự án)
             cboRole.Items.Clear();
-            cboRole.Items.AddRange(new object[] { "Quản trị viên", "Nhân viên" });
-            cboRole.SelectedIndex = 1; // Mặc định là Nhân viên
+            cboRole.Items.AddRange(new object[] { "Quản trị viên", "Quản lý dự án (PM)", "Nhân viên" });
+            cboRole.SelectedIndex = 2; // Mặc định là Nhân viên
 
             // Nạp danh sách Trạng thái tiếng Việt
             cboStatus.Items.Clear();
             cboStatus.Items.AddRange(new object[] { "Sẵn sàng", "Đang bận" });
             cboStatus.SelectedIndex = 0; // Mặc định là Sẵn sàng
-            cboRole.SelectedIndex = 0;     // Admin
-            cboStatus.SelectedIndex = 1;   // Available
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -56,20 +55,34 @@ namespace PMS
                 MessageBox.Show("Vui lòng nhập đầy đủ thông tin.");
                 return;
             }
+
+            // Lấy giá trị từ UI
             string roleVN = cboRole.SelectedItem.ToString();
-            string roleEN = (roleVN == "Quản trị viên") ? "Admin" : "User";
+            string roleEN = "Employee"; // Mặc định
+
+            // Giữ nguyên logic map dữ liệu, chỉ mở rộng thêm nhánh cho PM
+            if (roleVN == "Quản trị viên")
+            {
+                roleEN = "Admin";
+            }
+            else if (roleVN == "Quản lý dự án (PM)")
+            {
+                roleEN = "PM";
+            }
 
             string statusVN = cboStatus.SelectedItem.ToString();
-            string statusEN = (statusVN == "Sẵn sàng") ? "Available" : "Busy";
+            string statusEN = "Available"; // luôn mặc định
 
             // 2. Tạo user entity với giá trị Tiếng Anh
             var user = new User
             {
                 FullName = txtFullName.Text.Trim(),
                 Username = txtUsername.Text.Trim(),
-                PasswordHash = HashPassword(txtPassword.Text),
-                Role = roleEN,    // Lưu "Admin" hoặc "User"
-                Status = statusEN // Lưu "Available" hoặc "Busy"
+                Role = roleEN,
+                Status = statusEN,
+
+                // Gán trực tiếp chữ người dùng nhập vào
+                PasswordHash = txtPassword.Text.Trim()
             };
 
             try
@@ -83,7 +96,11 @@ namespace PMS
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message);
+                var msg = ex.InnerException != null
+                    ? ex.InnerException.Message
+                    : ex.Message;
+
+                MessageBox.Show("Lỗi: " + msg);
             }
         }
 

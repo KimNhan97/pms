@@ -11,7 +11,6 @@ namespace PMS
     {
         private readonly IAuthService _authService;
 
-
         public FormMain()
         {
             InitializeComponent();
@@ -22,7 +21,6 @@ namespace PMS
             InitializeComponent();
             _authService = authService;
         }
-        
 
         private void OpenChildForm(Form childForm)
         {
@@ -36,28 +34,46 @@ namespace PMS
             childForm.Show();
         }
 
-      
-
+        // ===== CẬP NHẬT HÀM PHÂN QUYỀN Ở ĐÂY =====
         private void ApplyRole()
         {
-            bool isAdmin = Session.IsAdmin;
+            // Lấy Role của user đang đăng nhập từ Session
+            string currentRole = Session.CurrentUser.Role;
 
-            // ADMIN
-            menuManageUsers.Visible = isAdmin;
-            //btnProjectManagement.Visible = isAdmin;
-            btnReports.Visible = isAdmin;
+            if (currentRole == "Admin")
+            {
+                // 1. ADMIN: Thấy toàn bộ hệ thống
+                menuManageUsers.Visible = true;
+                btnReports.Visible = true;
+                btnProjectManagement.Visible = true;
+                btnTaskManager.Visible = true;
+                btnMyProjects.Visible = true;
+            }
+            else if (currentRole == "PM")
+            {
+                // 2. PM: Thấy quản lý dự án, báo cáo, công việc... KHÔNG thấy quản lý user
+                menuManageUsers.Visible = false;
 
-            // USER
-            btnProjectManagement.Visible = true;
-            btnTaskManager.Visible = true;
-            btnMyProjects.Visible = true;
+                btnReports.Visible = true;
+                btnProjectManagement.Visible = true;
+                btnTaskManager.Visible = true;
+                btnMyProjects.Visible = true;
+            }
+            else
+            {
+                // 3. Mặc định là NHÂN VIÊN: Chỉ thấy dự án, công việc, thành viên
+                menuManageUsers.Visible = false;
+                btnReports.Visible = false; // Thường nhân viên sẽ không xem báo cáo tổng hợp
+
+                btnProjectManagement.Visible = true;
+                btnTaskManager.Visible = true;
+                btnMyProjects.Visible = true;
+            }
         }
-
-
+        // ==========================================
 
         private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
         private void menuManageUsers_Click_1(object sender, EventArgs e)
@@ -72,12 +88,10 @@ namespace PMS
 
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
         private void panelContent_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -97,11 +111,8 @@ namespace PMS
             OpenChildForm(frm);
         }
 
-
-
         private void lblUserName_Click(object sender, EventArgs e)
         {
-
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -135,6 +146,7 @@ namespace PMS
             FrmTaskManager frm = new FrmTaskManager(taskService);
             OpenChildForm(frm);
         }
+
         //dùng ADO.NET
         private void button3_Click(object sender, EventArgs e)
         {
@@ -154,7 +166,6 @@ namespace PMS
 
             OpenChildForm(frm);
         }
-
 
         private void btnReports_Click(object sender, EventArgs e)
         {

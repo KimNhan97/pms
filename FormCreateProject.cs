@@ -81,25 +81,46 @@ namespace PMS
             prgProgress.Maximum = 100;
         }
 
+        // ===== CẬP NHẬT HÀM NÀY ĐỂ XỬ LÝ THEO YÊU CẦU ===== NHD đã chỉnh sử hàm này để đảm bảo chỉ PM mới có thể tự gán mình làm Manager
         private void LoadAdminsIntoComboBox()
         {
             try
             {
-                var admins = _authService.GetAll()
-                    .Where(u => u.Role != null &&
-                                u.Role.Trim().Equals("Admin", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                // Kiểm tra an toàn: Nếu đang TẠO MỚI và tài khoản đăng nhập có quyền PM
+                if (!_isEdit && Session.CurrentUser != null && Session.CurrentUser.Role == "PM")
+                {
+                    // Tạo một danh sách chỉ chứa duy nhất thông tin của PM hiện tại
+                    var currentPMList = new List<User> { Session.CurrentUser };
 
-                cmbManager.DataSource = admins;
-                cmbManager.DisplayMember = "FullName";
-                cmbManager.ValueMember = "UserID";
-                cmbManager.SelectedIndex = -1; // Mặc định không chọn ai
+                    cmbManager.DataSource = currentPMList;
+                    cmbManager.DisplayMember = "FullName";
+                    cmbManager.ValueMember = "UserID";
+                    cmbManager.SelectedIndex = 0; // Tự động chọn chính PM này
+
+                    // Khóa ComboBox lại không cho chọn người khác (Đảm bảo PM không gán nhầm cho Admin)
+                    cmbManager.Enabled = false;
+                }
+                else
+                {
+                    // GIỮ NGUYÊN logic cũ cho tài khoản Admin hoặc khi đang ở chế độ CHỈNH SỬA
+                    var admins = _authService.GetAll()
+                        .Where(u => u.Role != null &&
+                                    u.Role.Trim().Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                    cmbManager.DataSource = admins;
+                    cmbManager.DisplayMember = "FullName";
+                    cmbManager.ValueMember = "UserID";
+                    cmbManager.SelectedIndex = -1; // Mặc định không chọn ai
+                    cmbManager.Enabled = true;     // Mở khóa cho phép chọn tự do
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi nạp danh sách Admin: " + ex.Message);
+                MessageBox.Show("Lỗi nạp danh sách người quản lý: " + ex.Message);
             }
         }
+        // ===================================================
 
         private void LoadProjectData()
         {
@@ -154,7 +175,6 @@ namespace PMS
                     _project.StartDate = dtpStartDate.Value;
                     _project.Deadline = dtpEndDate.Value;
                     _project.ManagerID = managerId;
-                    // Progress thường được cập nhật ở form Task, nhưng nếu cho sửa ở đây:
                     _project.Progress = prgProgress.Value;
 
                     _service.Update(_project);
@@ -192,8 +212,6 @@ namespace PMS
             this.Close();
         }
 
-        // Cập nhật label phần trăm khi kéo thanh progress (nếu prgProgress là TrackBar/HScrollBar)
-        // Nếu prgProgress là ProgressBar thuần, bạn có thể thêm NumericUpDown để chỉnh %
         private void prgProgress_ValueChanged(object sender, EventArgs e)
         {
             lblProgressPercent.Text = prgProgress.Value + " %";
@@ -201,7 +219,6 @@ namespace PMS
 
         private void txtDescription_TextChanged(object sender, EventArgs e)
         {
-
         }
     }
 }

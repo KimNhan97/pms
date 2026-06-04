@@ -39,7 +39,11 @@ namespace PMS
             LoadProjects();
 
             // 🔐 PHÂN QUYỀN THEO SESSION
-            if (!Session.IsAdmin)
+            // Lấy vai trò của người dùng đang đăng nhập
+            string currentRole = Session.CurrentUser.Role;
+
+            // Nếu KHÔNG phải là Admin và cũng KHÔNG phải là PM (tức là Nhân viên) thì mới ẩn nút
+            if (currentRole != "Admin" && currentRole != "PM")
             {
                 btnAdd.Visible = false;
                 btnRemove.Visible = false;

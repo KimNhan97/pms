@@ -28,7 +28,9 @@ namespace PMS
             Application.Exit();
         }
         private bool _showPassword = false;
-
+        private int _failedAttempts = 0;
+        private int _lockoutSeconds = 0;
+        private Timer _lockoutTimer;
         private void FormLogin_Load(object sender, EventArgs e)
         {
             // ===== FORM =====
@@ -143,7 +145,9 @@ namespace PMS
             btnClose.HoverState.BorderColor = Color.FromArgb(156, 163, 175);
             btnClose.HoverState.ForeColor = Color.FromArgb(17, 24, 39);
 
-            
+            _lockoutTimer = new Timer();
+            _lockoutTimer.Interval = 1000; // 1000 ms = 1 giây
+            _lockoutTimer.Tick += LockoutTimer_Tick;
 
 
         }
@@ -176,7 +180,34 @@ namespace PMS
         {
            
         }
+        private void LockoutTimer_Tick(object sender, EventArgs e)
+        {
+            _lockoutSeconds--;
 
+            if (_lockoutSeconds > 0)
+            {
+                // Cập nhật giao diện đếm ngược
+                lblDesc.Text = $"Khóa đăng nhập. Thử lại sau {_lockoutSeconds}s";
+                lblDesc.ForeColor = Color.Red;
+                lblDesc.Left = (guna2PanelCard.Width - lblDesc.Width) / 2; // Canh giữa lại label
+
+                btnLogin.Text = $"Đợi ({_lockoutSeconds}s)";
+            }
+            else
+            {
+                // Hết thời gian khóa -> Reset trạng thái
+                _lockoutTimer.Stop();
+                _failedAttempts = 0; // Reset số lần sai
+
+                btnLogin.Enabled = true;
+                btnLogin.Text = "Đăng nhập";
+
+                // Trả label description về như cũ
+                lblDesc.Text = "Vui lòng nhập thông tin để đăng nhập";
+                lblDesc.ForeColor = Color.Gray;
+                lblDesc.Left = (guna2PanelCard.Width - lblDesc.Width) / 2;
+            }
+        }
         private void txtPassword_IconRightClick(object sender, EventArgs e)
         {
             _showPassword = !_showPassword;
@@ -195,6 +226,9 @@ namespace PMS
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            // Ngăn chặn bấm nút nếu đang trong thời gian khóa (đề phòng lỗi click)
+            if (_lockoutSeconds > 0) return;
+
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
 
@@ -208,14 +242,32 @@ namespace PMS
 
             if (user == null)
             {
-                MessageBox.Show(
-                    "Sai tài khoản hoặc mật khẩu",
-                    "Đăng nhập thất bại",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                _failedAttempts++; // Tăng số lần sai
+
+                if (_failedAttempts >= 5)
+                {
+                    // Bắt đầu khóa 30 giây
+                    _lockoutSeconds = 30;
+                    btnLogin.Enabled = false; // Vô hiệu hóa nút
+                    _lockoutTimer.Start();
+
+                    // Gọi ngay Tick 1 lần để UI cập nhật ngay lập tức không bị delay 1 giây
+                    LockoutTimer_Tick(null, null);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"Sai tài khoản hoặc mật khẩu.\nBạn còn {5 - _failedAttempts} lần thử.",
+                        "Đăng nhập thất bại",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                }
                 return;
             }
+
+            // Đăng nhập thành công -> Reset số lần sai về 0
+            _failedAttempts = 0;
 
             // ✅ LƯU USER TOÀN CỤC
             Session.SetUser(user);
