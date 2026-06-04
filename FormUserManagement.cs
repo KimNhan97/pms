@@ -11,6 +11,7 @@ namespace PMS
     {
         private readonly IAuthService _userService;
         private Timer _searchTimer;
+        private int? _selectedUserId = null;
 
         public FormUserManagement(IAuthService userService)
         {
@@ -29,43 +30,28 @@ namespace PMS
 
         private void LoadUsers()
         {
-            // 1. Nạp dữ liệu
             dgvUsers.DataSource = null;
             dgvUsers.DataSource = _userService.GetAll();
 
-            // 2. Ẩn các cột không cần thiết
             HideNavigationColumns();
 
-            // 3. Việt hóa Tiêu đề cột (Header Text)
             if (dgvUsers.Columns["UserID"] != null) dgvUsers.Columns["UserID"].HeaderText = "Mã NV";
             if (dgvUsers.Columns["FullName"] != null) dgvUsers.Columns["FullName"].HeaderText = "Họ và Tên";
             if (dgvUsers.Columns["Username"] != null) dgvUsers.Columns["Username"].HeaderText = "Tên đăng nhập";
             if (dgvUsers.Columns["Role"] != null) dgvUsers.Columns["Role"].HeaderText = "Vai trò";
             if (dgvUsers.Columns["Status"] != null) dgvUsers.Columns["Status"].HeaderText = "Trạng thái";
 
-<<<<<<< HEAD
-            // 4. Áp dụng Style chuẩn (Màu Header đen, chữ trắng, khoảng cách dòng)
             StyleDGV(dgvUsers);
         }
-=======
-            // Ẩn cột mật khẩu để bảo mật và đẹp giao diện
-            //if (dgvUsers.Columns["PasswordHash"] != null) dgvUsers.Columns["PasswordHash"].Visible = false;
-
-            // 4. Áp dụng Style chuẩn (Màu Header đen, chữ trắng, khoảng cách dòng)
-            StyleDGV(dgvUsers);
-        }
-
-
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
 
         private void FormUserManagement_Load(object sender, EventArgs e)
         {
-            // ===== ĐÃ CẬP NHẬT: Thêm PM vào ComboBox =====
             cboRole.Items.Clear();
             cboRole.Items.AddRange(new[] { "Quản trị viên", "Quản lý dự án (PM)", "Nhân viên" });
 
             cboStatus.Items.Clear();
             cboStatus.Items.AddRange(new[] { "Sẵn sàng", "Đang bận", "Ngừng hoạt động" });
+
             cboSearchStatus.Items.Clear();
             cboSearchStatus.Items.AddRange(new[]
             {
@@ -86,25 +72,16 @@ namespace PMS
             dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvUsers.AutoGenerateColumns = true;
 
+            // Timer debounce cho tìm kiếm
             _searchTimer = new Timer();
-            _searchTimer.Interval = 300; // 300ms sau khi ngừng gõ
+            _searchTimer.Interval = 300;
             _searchTimer.Tick += (s, ev) =>
             {
                 _searchTimer.Stop();
                 ApplyFilter();
             };
 
-<<<<<<< HEAD
-            StyleDGV(dgvUsers);
-            StyleUpdate(btnUpdate);
             LoadUsers();
-=======
-
-            StyleDGV(dgvUsers); 
-            StyleUpdate(btnUpdate);
-            LoadUsers();
-
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
         }
 
         private void dgvUsers_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -117,8 +94,7 @@ namespace PMS
             txtUsername.Text = row.Cells["Username"].Value.ToString();
             cboRole.Text = row.Cells["Role"].Value.ToString();
             cboStatus.Text = row.Cells["Status"].Value.ToString();
-
-            txtPassword.Text = ""; // KHÔNG load mật khẩu
+            txtPassword.Text = "";
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -127,7 +103,7 @@ namespace PMS
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    LoadUsers(); // reload danh sách sau khi thêm
+                    LoadUsers();
                 }
             }
         }
@@ -137,26 +113,18 @@ namespace PMS
             txtFullName.Clear();
             txtUsername.Clear();
             txtPassword.Clear();
-
             cboRole.SelectedIndex = -1;
             cboStatus.SelectedIndex = -1;
-
             dgvUsers.ClearSelection();
         }
 
         private void ResetFilter()
         {
-            // Text search
             txtSearchName.Text = "Tìm kiếm theo tên...";
             txtSearchName.ForeColor = Color.Gray;
+            cboSearchStatus.SelectedIndex = 0;
 
-            // Combo trạng thái
-            cboSearchStatus.SelectedIndex = 0; // "Tất cả trạng thái"
-
-            // Reload toàn bộ danh sách
             LoadUsers();
-
-            // Bỏ chọn dòng
             dgvUsers.ClearSelection();
         }
 
@@ -168,10 +136,7 @@ namespace PMS
                 return;
             }
 
-            if (MessageBox.Show("Bạn có chắc chắn muốn xóa?",
-                "Xác nhận",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning) == DialogResult.No)
+            if (MessageBox.Show("Bạn có chắc chắn muốn xóa?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                 return;
 
             string message;
@@ -204,27 +169,19 @@ namespace PMS
                 Username = txtUsername.Text,
                 Role = ConvertRoleToEN(cboRole.Text),
                 Status = ConvertStatusToEN(cboStatus.Text),
-                PasswordHash = txtPassword.Text // có thể rỗng
+                PasswordHash = txtPassword.Text
             };
+
             _userService.Update(user);
             LoadUsers();
         }
 
         private void btnReload_Click(object sender, EventArgs e)
         {
-            // 1. Reset các ô nhập liệu
             ClearEditPanel();
-
-            // 2. Reset ô tìm kiếm
             txtSearchName.ForeColor = Color.Gray;
             cboSearchStatus.SelectedIndex = 0;
-
-            // 3. Gọi lại hàm LoadUsers (Hàm này đã có StyleDGV nên sẽ luôn đẹp)
             LoadData();
-<<<<<<< HEAD
-=======
-
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
         }
 
         private void LoadUserToPanel(DataGridViewRow row)
@@ -233,15 +190,10 @@ namespace PMS
 
             txtFullName.Text = row.Cells["FullName"].Value.ToString();
             txtUsername.Text = row.Cells["Username"].Value.ToString();
-
-            // Chuyển sang tiếng Việt để hiển thị
             cboRole.Text = ConvertRoleToVN(row.Cells["Role"].Value.ToString());
             cboStatus.Text = ConvertStatusToVN(row.Cells["Status"].Value.ToString());
-
             txtPassword.Text = "";
         }
-
-        private int? _selectedUserId = null;
 
         private void dgvUsers_RowHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -251,54 +203,27 @@ namespace PMS
             LoadUserToPanel(row);
         }
 
-<<<<<<< HEAD
-=======
-     
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
         private void SearchUsers()
         {
-            // 1. Lấy từ khóa tìm kiếm (Xử lý Placeholder)
-            string keyword = (txtSearchName.ForeColor == Color.Gray)
-                ? string.Empty
-                : txtSearchName.Text.Trim();
-
-            // 2. Lấy trạng thái từ ComboBox
-            string statusVN = cboSearchStatus.SelectedItem != null
-                ? cboSearchStatus.SelectedItem.ToString()
-                : "Tất cả trạng thái";
-
-            // 3. Chuyển đổi ngôn ngữ VN -> EN
+            // Xử lý Placeholder
+            string keyword = (txtSearchName.ForeColor == Color.Gray) ? string.Empty : txtSearchName.Text.Trim();
+            string statusVN = cboSearchStatus.SelectedItem != null ? cboSearchStatus.SelectedItem.ToString() : "Tất cả trạng thái";
             string statusEN = null;
 
-            if (statusVN == "Sẵn sàng")
-            {
-                statusEN = "Available";
-            }
-            else if (statusVN == "Đang bận")
-            {
-                statusEN = "Busy";
-            }
-            else if (statusVN == "Ngừng hoạt động")
-            {
-                statusEN = "Inactive";
-            }
+            if (statusVN == "Sẵn sàng") statusEN = "Available";
+            else if (statusVN == "Đang bận") statusEN = "Busy";
+            else if (statusVN == "Ngừng hoạt động") statusEN = "Inactive";
 
             try
             {
-                // 4. Gọi service để lấy dữ liệu 
                 var data = _userService.SearchUsers(keyword, statusEN);
-
-                // 5. Cập nhật giao diện DataGridView
                 dgvUsers.DataSource = null;
                 dgvUsers.DataSource = data;
-
-                // 6. Định dạng lại cột
                 HideNavigationColumns();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Lỗi khi tìm kiếm: {ex.Message}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -331,7 +256,6 @@ namespace PMS
                 Rectangle rect = panel.ClientRectangle;
                 rect.Width -= 1;
                 rect.Height -= 1;
-
                 e.Graphics.DrawRectangle(pen, rect);
             }
 
@@ -359,8 +283,11 @@ namespace PMS
         }
 
         private void label6_Click(object sender, EventArgs e) { }
+        private void label3_Click(object sender, EventArgs e) { }
+        private void txtFullName_TextChanged(object sender, EventArgs e) { }
+        private void panel1_Paint(object sender, PaintEventArgs e) { }
 
-        //Chỉnh giao diện 
+        // Chỉnh giao diện 
         private void SetRounded(Control c, int radius)
         {
             var path = new System.Drawing.Drawing2D.GraphicsPath();
@@ -379,10 +306,8 @@ namespace PMS
         {
             btn.Text = "  ⟳  Làm mới";
             btn.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-
             btn.BackColor = Color.White;
             btn.ForeColor = Color.FromArgb(64, 64, 64);
-
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 1;
             btn.FlatAppearance.BorderColor = Color.LightGray;
@@ -399,10 +324,8 @@ namespace PMS
 
             btn.Text = "  🗑  Xóa";
             btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-
             btn.BackColor = normal;
             btn.ForeColor = Color.White;
-
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
             btn.UseVisualStyleBackColor = false;
@@ -420,10 +343,8 @@ namespace PMS
 
             btn.Text = "  ✏  Sửa";
             btn.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-
             btn.BackColor = normal;
             btn.ForeColor = Color.White;
-
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
             btn.UseVisualStyleBackColor = false;
@@ -436,15 +357,13 @@ namespace PMS
 
         private void StyleAdd(Button btn)
         {
-            Color normal = Color.FromArgb(25, 135, 84);   // xanh lá
-            Color hover = Color.FromArgb(20, 108, 67);   // xanh lá đậm
+            Color normal = Color.FromArgb(25, 135, 84);
+            Color hover = Color.FromArgb(20, 108, 67);
 
             btn.Text = "  +  Thêm mới";
             btn.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-
             btn.BackColor = normal;
             btn.ForeColor = Color.White;
-
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
             btn.UseVisualStyleBackColor = false;
@@ -459,19 +378,14 @@ namespace PMS
         {
             btn.Text = "Lưu";
             btn.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-
-            btn.FillColor = Color.FromArgb(59, 130, 246);      // xanh Save
+            btn.FillColor = Color.FromArgb(59, 130, 246);
             btn.HoverState.FillColor = Color.FromArgb(37, 99, 235);
-
             btn.ForeColor = Color.White;
-
             btn.BorderRadius = 8;
             btn.BorderThickness = 0;
-
             btn.ImageAlign = HorizontalAlignment.Left;
             btn.ImageOffset = new Point(5, 0);
             btn.TextOffset = new Point(10, 0);
-
             btn.Cursor = Cursors.Hand;
 
             // Disabled state
@@ -479,10 +393,7 @@ namespace PMS
             btn.DisabledState.ForeColor = Color.FromArgb(100, 116, 139);
         }
 
-        private void label3_Click(object sender, EventArgs e) { }
-        private void txtFullName_TextChanged(object sender, EventArgs e) { }
-
-        void StyleDGV(DataGridView dgv)
+        private void StyleDGV(DataGridView dgv)
         {
             dgv.EnableHeadersVisualStyles = false;
             dgv.RowHeadersVisible = false;
@@ -490,20 +401,17 @@ namespace PMS
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            // Màu Header
             dgv.ColumnHeadersHeight = 50;
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 23, 42);
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 12, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // Màu dòng dữ liệu và độ cao dòng
             dgv.RowTemplate.Height = 55;
             dgv.DefaultCellStyle.Font = new Font("Segoe UI", 12, FontStyle.Regular);
             dgv.DefaultCellStyle.Padding = new Padding(10);
             dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // Màu khi chọn dòng
             dgv.RowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(224, 242, 254);
             dgv.RowsDefaultCellStyle.SelectionForeColor = Color.FromArgb(2, 132, 199);
         }
@@ -512,13 +420,11 @@ namespace PMS
         {
             if (e.RowIndex < 0 || e.Value == null) return;
 
-            // Xử lý cột Vai trò
             if (dgvUsers.Columns[e.ColumnIndex].Name == "Role")
             {
                 string role = e.Value.ToString();
-                e.Value = ConvertRoleToVN(role); // Đổi sang tiếng Việt
+                e.Value = ConvertRoleToVN(role);
                 e.FormattingApplied = true;
-
                 e.CellStyle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
 
                 if (role == "Admin")
@@ -526,22 +432,20 @@ namespace PMS
                     e.CellStyle.BackColor = Color.FromArgb(224, 231, 255);
                     e.CellStyle.ForeColor = Color.FromArgb(67, 56, 202);
                 }
-                // ===== ĐÃ CẬP NHẬT: Thêm Style riêng biệt cho thẻ Role PM =====
                 else if (role == "PM")
                 {
-                    e.CellStyle.BackColor = Color.FromArgb(255, 237, 213); // Nền màu cam nhạt
-                    e.CellStyle.ForeColor = Color.FromArgb(194, 65, 12);   // Chữ màu cam đậm
+                    e.CellStyle.BackColor = Color.FromArgb(255, 237, 213);
+                    e.CellStyle.ForeColor = Color.FromArgb(194, 65, 12);
                 }
             }
 
-            // Xử lý cột Trạng thái
             if (dgvUsers.Columns[e.ColumnIndex].Name == "Status")
             {
                 string status = e.Value.ToString();
-                e.Value = ConvertStatusToVN(status); // Đổi sang tiếng Việt
+                e.Value = ConvertStatusToVN(status);
                 e.FormattingApplied = true;
-
                 e.CellStyle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+
                 if (status == "Available")
                 {
                     e.CellStyle.BackColor = Color.FromArgb(220, 252, 231);
@@ -561,12 +465,6 @@ namespace PMS
         }
 
         private void LoadData() => ApplyFilter();
-
-<<<<<<< HEAD
-        private void panel1_Paint(object sender, PaintEventArgs e) { }
-=======
-        private void LoadData() => ApplyFilter();
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -594,17 +492,14 @@ namespace PMS
                     Username = txtUsername.Text.Trim(),
                     Role = ConvertRoleToEN(cboRole.Text),
                     Status = ConvertStatusToEN(cboStatus.Text),
-
-                    // Gán trực tiếp không qua hàm Hash
                     PasswordHash = txtPassword.Text.Trim()
                 };
 
                 _userService.Update(user);
-
                 MessageBox.Show("Cập nhật nhân viên thành công", "Thông báo");
 
-                LoadUsers();        // reload danh sách
-                ClearEditPanel();  // clear panel chỉnh sửa
+                LoadUsers();
+                ClearEditPanel();
             }
             catch (Exception ex)
             {
@@ -620,22 +515,19 @@ namespace PMS
             LoadUserToPanel(row);
         }
 
-        // ===== ĐÃ CẬP NHẬT: Xử lý dịch thuật ngôn ngữ cho PM =====
         private string ConvertRoleToVN(string role)
         {
             if (role == "Admin") return "Quản trị viên";
-            if (role == "PM") return "Quản lý dự án (PM)"; // Thêm dòng này
+            if (role == "PM") return "Quản lý dự án (PM)";
             if (role == "Employee") return "Nhân viên";
-
             return role;
         }
 
         private string ConvertRoleToEN(string roleVN)
         {
             if (roleVN == "Quản trị viên") return "Admin";
-            if (roleVN == "Quản lý dự án (PM)") return "PM"; // Thêm dòng này
+            if (roleVN == "Quản lý dự án (PM)") return "PM";
             if (roleVN == "Nhân viên") return "Employee";
-
             return roleVN;
         }
 
@@ -644,16 +536,11 @@ namespace PMS
             if (status == "Available") return "Sẵn sàng";
             if (status == "Busy") return "Đang bận";
             if (status == "Inactive") return "Ngừng hoạt động";
-
             return status;
         }
 
         private string ConvertStatusToEN(string statusVN)
         {
-<<<<<<< HEAD
-=======
-
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
             if (string.IsNullOrWhiteSpace(statusVN) || statusVN == "Tất cả trạng thái")
                 return null;
 
@@ -668,8 +555,6 @@ namespace PMS
         {
             if (txtSearchName.ForeColor == Color.Gray)
                 return;
-<<<<<<< HEAD
-=======
 
             _searchTimer.Stop();
             _searchTimer.Start();
@@ -677,12 +562,7 @@ namespace PMS
 
         private void ApplyFilter()
         {
-            // 1. Keyword (xử lý placeholder)
-            string keyword = (txtSearchName.ForeColor == Color.Gray)
-                ? null
-                : txtSearchName.Text.Trim();
-
-            // 2. Status
+            string keyword = (txtSearchName.ForeColor == Color.Gray) ? null : txtSearchName.Text.Trim();
             string statusVN = cboSearchStatus.SelectedItem?.ToString();
             string statusEN = ConvertStatusToEN(statusVN);
 
@@ -692,42 +572,6 @@ namespace PMS
 
                 dgvUsers.DataSource = null;
                 dgvUsers.DataSource = data;
-
-                HideNavigationColumns();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tìm kiếm: " + ex.Message);
-            }
-        }
-
-
-    }
-}
->>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
-
-            _searchTimer.Stop();
-            _searchTimer.Start();
-        }
-
-        private void ApplyFilter()
-        {
-            // 1. Keyword (xử lý placeholder)
-            string keyword = (txtSearchName.ForeColor == Color.Gray)
-                ? null
-                : txtSearchName.Text.Trim();
-
-            // 2. Status
-            string statusVN = cboSearchStatus.SelectedItem?.ToString();
-            string statusEN = ConvertStatusToEN(statusVN);
-
-            try
-            {
-                var data = _userService.SearchUsers(keyword, statusEN);
-
-                dgvUsers.DataSource = null;
-                dgvUsers.DataSource = data;
-
                 HideNavigationColumns();
             }
             catch (Exception ex)
