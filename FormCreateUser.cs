@@ -78,11 +78,9 @@ namespace PMS
             {
                 FullName = txtFullName.Text.Trim(),
                 Username = txtUsername.Text.Trim(),
-                Role = roleEN,
-                Status = statusEN,
-
-                // Gán trực tiếp chữ người dùng nhập vào
-                PasswordHash = txtPassword.Text.Trim()
+                PasswordHash = HashPassword(txtPassword.Text),
+                Role = roleEN,    // Lưu "Admin" hoặc "User"
+                Status = statusEN // Lưu "Available" hoặc "Busy"
             };
 
             try
@@ -102,6 +100,7 @@ namespace PMS
 
                 MessageBox.Show("Lỗi: " + msg);
             }
+
         }
 
         private void btnHuy_Click(object sender, EventArgs e)

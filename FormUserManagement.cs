@@ -43,9 +43,20 @@ namespace PMS
             if (dgvUsers.Columns["Role"] != null) dgvUsers.Columns["Role"].HeaderText = "Vai trò";
             if (dgvUsers.Columns["Status"] != null) dgvUsers.Columns["Status"].HeaderText = "Trạng thái";
 
+<<<<<<< HEAD
             // 4. Áp dụng Style chuẩn (Màu Header đen, chữ trắng, khoảng cách dòng)
             StyleDGV(dgvUsers);
         }
+=======
+            // Ẩn cột mật khẩu để bảo mật và đẹp giao diện
+            //if (dgvUsers.Columns["PasswordHash"] != null) dgvUsers.Columns["PasswordHash"].Visible = false;
+
+            // 4. Áp dụng Style chuẩn (Màu Header đen, chữ trắng, khoảng cách dòng)
+            StyleDGV(dgvUsers);
+        }
+
+
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
 
         private void FormUserManagement_Load(object sender, EventArgs e)
         {
@@ -83,9 +94,17 @@ namespace PMS
                 ApplyFilter();
             };
 
+<<<<<<< HEAD
             StyleDGV(dgvUsers);
             StyleUpdate(btnUpdate);
             LoadUsers();
+=======
+
+            StyleDGV(dgvUsers); 
+            StyleUpdate(btnUpdate);
+            LoadUsers();
+
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
         }
 
         private void dgvUsers_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -202,6 +221,10 @@ namespace PMS
 
             // 3. Gọi lại hàm LoadUsers (Hàm này đã có StyleDGV nên sẽ luôn đẹp)
             LoadData();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
         }
 
         private void LoadUserToPanel(DataGridViewRow row)
@@ -228,6 +251,10 @@ namespace PMS
             LoadUserToPanel(row);
         }
 
+<<<<<<< HEAD
+=======
+     
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
         private void SearchUsers()
         {
             // 1. Lấy từ khóa tìm kiếm (Xử lý Placeholder)
@@ -535,7 +562,11 @@ namespace PMS
 
         private void LoadData() => ApplyFilter();
 
+<<<<<<< HEAD
         private void panel1_Paint(object sender, PaintEventArgs e) { }
+=======
+        private void LoadData() => ApplyFilter();
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -619,6 +650,10 @@ namespace PMS
 
         private string ConvertStatusToEN(string statusVN)
         {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
             if (string.IsNullOrWhiteSpace(statusVN) || statusVN == "Tất cả trạng thái")
                 return null;
 
@@ -633,6 +668,43 @@ namespace PMS
         {
             if (txtSearchName.ForeColor == Color.Gray)
                 return;
+<<<<<<< HEAD
+=======
+
+            _searchTimer.Stop();
+            _searchTimer.Start();
+        }
+
+        private void ApplyFilter()
+        {
+            // 1. Keyword (xử lý placeholder)
+            string keyword = (txtSearchName.ForeColor == Color.Gray)
+                ? null
+                : txtSearchName.Text.Trim();
+
+            // 2. Status
+            string statusVN = cboSearchStatus.SelectedItem?.ToString();
+            string statusEN = ConvertStatusToEN(statusVN);
+
+            try
+            {
+                var data = _userService.SearchUsers(keyword, statusEN);
+
+                dgvUsers.DataSource = null;
+                dgvUsers.DataSource = data;
+
+                HideNavigationColumns();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tìm kiếm: " + ex.Message);
+            }
+        }
+
+
+    }
+}
+>>>>>>> 16ef3ecfcf9f5551d6337f1e8bd6f1142e1cec10
 
             _searchTimer.Stop();
             _searchTimer.Start();
